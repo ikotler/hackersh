@@ -1,0 +1,64 @@
+Hackersh TODOs
+==============
+
+Priority
+--------
+
+- Add Unit Tests
+
+- Add Documentation
+
+
+Nice-to-Have
+------------
+
+- Add Tools (sorted by no particular order):
+    - Metasploit
+    - OpenVAS
+    - ScanSSH
+    - TheHarvester
+    - Maltego
+    - Hydra
+    - Traceroute
+    - TcpTraceroute
+    - WHOIS
+    - Nmap NSE Scripts?
+    - hping3
+    - Brutus 
+    - medusa
+    - fping
+    - netenum
+    - unicornscan
+    - scanrand
+    - hping
+    - sinfp
+    - Netcat?
+    - John The Ripper
+    - Hping
+    - Dig
+    - Nslookup?
+    - netglub
+
+- Implement "Save As" (CSV? XML? HTML?) Components
+
+- Add support for .hackershrc
+
+- Implement an `alias` built-in command
+
+- Add '.' commands (aka. built-in commands).
+
+
+Future
+------
+
+- Plugins System?
+
+- Add support for SQLLite3 (and other?) backend
+
+- Implement `cast` built-in command.
+
+
+Science Fiction
+---------------
+
+- GUI (UI Frontend)

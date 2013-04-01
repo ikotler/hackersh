@@ -1,0 +1,3 @@
+Ideally, you should be able to just type:
+
+python setup.py install

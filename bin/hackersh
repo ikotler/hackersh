@@ -1,0 +1,379 @@
+#!/usr/bin/python
+#
+# Copyright (C) 2013 Itzik Kotler
+#
+# This file is part of Hackersh.
+#
+# Hackersh is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2, or (at your option)
+# any later version.
+#
+# Hackersh is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Hackersh; see the file COPYING.  If not,
+# see <http://www.gnu.org/licenses/>.
+
+import sys
+import readline
+import code
+import codeop
+import argparse
+import os
+import types
+import atexit
+import pythonect
+import shlex
+
+
+try:
+
+    import _preamble
+
+except ImportError:
+
+    sys.exc_clear()
+
+
+import hackersh
+import hackersh.network
+import hackersh.misc
+import hackersh.conio
+import hackersh.log
+import hackersh.util
+import hackersh.objects
+
+
+logger = hackersh.log.logging.getLogger('hackersh')
+
+
+# Hackersh Console
+
+class HackershCompile(codeop.Compile):
+
+    def __init__(self):
+
+        codeop.Compile.__init__(self)
+
+    def __call__(self, source, filename, symbol):
+
+        if source[-1] == '\\':
+            return None
+
+        return source.replace('\\\n', '')
+
+
+class HackershCommandCompiler(codeop.CommandCompiler):
+
+    def __init__(self):
+
+        codeop.CommandCompiler.__init__(self)
+
+        self.compiler = HackershCompile()
+
+
+class HackershInteractiveConsole(code.InteractiveConsole):
+
+    def __init__(self, locals=None, histfile=os.path.expanduser("~/.hackersh_history")):
+
+        code.InteractiveConsole.__init__(self, locals)
+
+        self.compile = HackershCommandCompiler()
+
+        self.init_history(histfile)
+
+    def init_history(self, histfile):
+
+        try:
+
+            readline.read_history_file(histfile)
+
+        except IOError, e:
+
+            logger.warn('Reading history file %s failed due to %s' % (histfile, e))
+
+            # No history file
+
+            pass
+
+        atexit.register(self.save_history, histfile)
+
+    def save_history(self, histfile):
+
+        readline.write_history_file(histfile)
+
+    def runcode(self, code_):
+
+        try:
+
+            if code_ == "pass":
+
+                return
+            
+            else:
+
+                code_ = hackersh2pythonect(code_, self.locals)
+
+                if not code_:
+
+                    return
+
+                logger.debug('Evaluating `%s`' % code_)
+
+                return_value = pythonect.eval(code_, {}, self.locals)
+
+                # Meaningful Return Value?
+
+                if return_value is not None:
+
+                    # String?
+
+                    if isinstance(return_value, basestring):
+
+                        if not return_value.endswith('\n'):
+
+                            return_value = return_value + '\n'
+
+                    else:
+
+                        return_value = hackersh.objects.SessionsTree(return_value)
+
+                    self.write(str(return_value))
+
+                    # Keep return_value for further reference or reset to None?
+
+                    if return_value is not False:
+
+                        # Reset locals to None
+
+                        self.locals['_'] = return_value
+
+        except SystemExit:
+
+            raise
+
+        except:
+
+            self.showtraceback()
+
+        else:
+
+            if code.softspace(sys.stdout, 0):
+
+                print
+
+
+# Functions
+
+def __quotes_wrap(list):
+
+    new_list = []
+
+    for e in list:
+
+        new_list.append("'%s'" % e)
+
+    return new_list
+
+
+def __fix_expression(operator, expression, sym_tbl):
+
+    # i.e. nmap
+
+    if expression in sym_tbl and not isinstance(sym_tbl[expression], types.FunctionType):
+
+        expression = "%s()" % expression
+
+    # i.e. /usr/bin/nmap or ./nmap
+
+    if expression.startswith('/') or expression.startswith('./') or expression.startswith('../'):
+
+        expression_cmd = shlex.split(expression)
+
+        external_component_path = os.path.abspath(expression_cmd[0])
+
+        external_component_name = os.path.splitext(os.path.basename(external_component_path))[0]
+
+        external_component_kwargs = '**{}'
+
+        # External binary? (i.e. /bin/ls)
+
+        if external_component_name not in sym_tbl:
+
+            if not os.path.isfile(external_component_path):
+
+                external_component_path = hackersh.utils.which(expression_cmd[0])[0]
+
+                if not external_component_path:
+
+                    print '%s: command not found' % expression_cmd[0]
+
+                    return False
+
+            external_component_kwargs = "**{'path':'%s'}" % external_component_path
+
+            external_component_name = "system"
+
+            external_component_args = "*(%s)" % ','.join(__quotes_wrap(expression_cmd[1:]) + [' '])
+
+        expression = "%s(%s, %s)" % (external_component_name, external_component_args, external_component_kwargs)
+
+    return (operator, expression)
+
+
+def hackersh2pythonect(code, sym_tbl):
+
+    # Shell-Style to Pythonect Fixup
+
+    code_ = []
+
+    for program in pythonect.parse(code):
+
+        current_program = []
+
+        for operator, expression in program:
+
+            # e.g. 'localhost' -> [nslookup, hostname] -> nmap -> ...'
+    
+            # NOTE: This should be replaced by something that uses ast.parse()
+
+            if expression.strip()[0] == '[':
+
+                _expression = []
+
+                for expression_in_list in expression[1:-1].split(','):
+
+                    if expression_in_list.startswith('__builtins__.expr'):
+
+                        _new_expression_buffer = ""
+
+                        # Unpack .expr, run through `hackersh2pythonect` and reconstruct as 'X -> Y -> ...' (if applicable)
+
+                        _new_expression = eval(expression_in_list.replace('__builtins__.expr', 'hackersh2pythonect').replace(')', ', sym_tbl)'), globals(), locals())[0]
+
+                        for element in _new_expression:
+
+                            _new_expression_buffer = _new_expression_buffer + element[1]
+
+                            if not element[0]:
+
+                                break
+
+                            else:
+
+                                _new_expression_buffer = _new_expression_buffer + ' ' + element[0] + ' '
+
+                        _new_expression = _new_expression_buffer
+                            
+                    else:
+
+                        (new_operator, _new_expression) = __fix_expression(operator, expression_in_list, sym_tbl)
+
+                    _expression.append(_new_expression)
+
+                new_expression = '[' + ','.join(_expression) + ']'
+            
+            else:
+
+                new_operator, new_expression = __fix_expression(operator, expression, sym_tbl)
+
+            current_program.append([new_operator, new_expression])
+
+        code_.append(current_program)
+
+    return code_
+
+
+def main():
+
+    locals_ = {}
+
+    total_components = 0
+
+    banner = "Hackersh version %s ( http://www.hackersh.org )" % hackersh.__version__
+
+    # Parse command-line arguments
+
+    parser = argparse.ArgumentParser(sys.argv)
+
+    parser.add_argument('script', metavar='file', nargs='?', type=argparse.FileType('rt'))
+    parser.add_argument('--verbose', '-v', action='count', default=0)
+    parser.add_argument('--version', '-V', action='version', version=banner)
+
+    args = parser.parse_args()
+
+    # Setup logging level
+
+    if args.verbose:
+
+        logger.setLevel(hackersh.log.logging.ERROR - ((args.verbose % 4) * 10))
+
+    logger.info('Using [Pythonect %s]' % pythonect.__version__)
+    logger.info('Started Hackersh with args = %s' % args)
+
+    # Extract hackersh into locals_
+
+    for component_library in ('hackersh.network', 'hackersh.misc'):
+
+        for name in dir(sys.modules[component_library]):
+
+            if not name.startswith('_'):
+
+                obj = getattr(sys.modules[component_library], name)
+
+                try:
+
+                    if obj != hackersh.Component and issubclass(obj, hackersh.Component):
+
+                        locals_[name.lower()] = obj
+
+                        logger.debug('Registering %s as %s' % (obj, name.lower()))
+
+                        total_components = total_components + 1
+
+                except TypeError:
+
+                        pass
+
+    if not total_components:
+
+        logger.warn('No components were found!')
+
+    # Script-mode (i.e. ./hackersh script or #!/usr/bin/env hackersh)
+
+    if args.script:
+
+        pythonect.eval(' '.join(hackersh2pythonect(args.script.read(), locals_)), {}, locals_)
+
+        args.script.close()
+
+    # Interactive-mode (i.e. ./hackersh)
+
+    else:
+
+        # Change prompt
+
+        sys.ps1 = '% '
+
+        # Add current working directory to sys.path
+
+        sys.path.insert(0, os.getcwd())
+
+        motd = "Welcome to Hacker Shell Version %s!" % hackersh.__version__
+
+        banner = "Hackersh Version %s\nCopyright (C) 2013 Itzik Kotler\nVisit http://www.hackersh.org for updates.\n" % hackersh.__version__
+
+        HackershInteractiveConsole(locals_).interact(banner + hackersh.conio.draw_msgbox(motd))
+
+    return 0
+
+
+# Entry Point
+
+if __name__ == "__main__":
+
+    sys.exit(main())
