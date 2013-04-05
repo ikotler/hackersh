@@ -2,7 +2,7 @@
 Hackersh
 ========
 
-`Hackersh <https://www.hackersh.org>`_ ("Hacker Shell") is a shell (command interpreter) written in Python with Pythonect-like syntax, builtin security commands, and out of the box wrappers for various security tools.
+`Hackersh <http://www.hackersh.org>`_ ("Hacker Shell") is a shell (command interpreter) written in Python with Pythonect-like syntax, builtin security commands, and out of the box wrappers for various security tools.
 
 Hello, world
 ------------
