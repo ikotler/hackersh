@@ -23,7 +23,6 @@ import types
 import xml.sax
 import csv
 import shlex
-import collections
 import HTMLParser
 import types
 
@@ -33,6 +32,7 @@ import types
 import log
 import conio
 import util
+import _ordereddict
 
 
 # Component Classes
@@ -362,7 +362,7 @@ class XMLOutputHandler(OutputHandler, xml.sax.handler.ContentHandler):
         xml.sax.parseString(data, self)
 
 
-class SessionContext(collections.OrderedDict):
+class SessionContext(_ordereddict.OrderedDict):
 
     def __getitem__(self, key):
 
@@ -372,7 +372,7 @@ class SessionContext(collections.OrderedDict):
 
             # Case insensitive
 
-            value = collections.OrderedDict.__getitem__(self, key.upper())
+            value = _ordereddict.OrderedDict.__getitem__(self, key.upper())
 
         except KeyError:
 
@@ -430,7 +430,7 @@ class SessionsTree(object):
 
         self.children = []
 
-        self.keys = collections.OrderedDict()
+        self.keys = _ordereddict.OrderedDict()
 
         # N
 

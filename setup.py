@@ -31,6 +31,7 @@ except ImportError:
     import setuptools
 
 
+import sys
 import distutils.core
 import distutils.command.build
 
@@ -66,6 +67,20 @@ class Build(distutils.command.build.build):
 
 if __name__ == "__main__":
 
+    dependencies = ['pythonect>=0.4.2', 'prettytable>=0.6.1', 'netaddr>=0.7.10']
+
+    major, minor = sys.version_info[:2]
+
+    python_27 = (major > 2 or (major == 2 and minor >= 7))
+
+    # < Python 2.7 ?
+
+    if not python_27:
+
+        # Python 2.6
+
+        dependencies = dependencies + ['argparse>=1.2.1', 'ordereddict>=1.1']
+
     setupconf = dict(
         name='Hackersh',
         version=hackersh.__version__,
@@ -90,7 +105,7 @@ if __name__ == "__main__":
             'Programming Language :: Python :: 2.7',
         ],
 
-        install_requires=['pythonect>=0.4.2', 'prettytable>=0.6.1', 'netaddr>=0.7.10'],
+        install_requires=dependencies,
 
         cmdclass={'build': Build},
 
