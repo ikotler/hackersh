@@ -16,35 +16,31 @@
 # along with Hackersh; see the file COPYING.  If not,
 # see <http://www.gnu.org/licenses/>.
 
-# Version
+# Local imports
 
-try:
-
-    from _version import __version__
-
-    # Clean up namespace
-
-    del _version
-
-except ImportError as e:
-
-    from miscellaneous import get_version
-
-    __version__ = get_version()
-
-    # Clean up namespace
-
-    del e, get_version, miscellaneous
+import hackersh.objects
 
 
-# API
+# Metadata
 
-try:
+__author__ = "Itzik Kotler <xorninja@gmail.com>"
+__version__ = "0.1.0"
 
-    from objects import *
 
-except ImportError as e:
+# Implementation
 
-    # When imported by setup.py, it's expected that not all the dependencies will be there
+class Iterate_Links(hackersh.objects.InternalComponent):
 
-    pass
+    def run(self, argv, context):
+
+        contexts = []
+
+        br = argv[0]
+
+        for link in br.links():
+
+            contexts.append(hackersh.objects.RemoteSessionContext(context, URL=link.absolute_url))
+
+        return contexts if contexts else False
+
+    DEFAULT_FILTER = DEFAULT_QUERY = "context['BR_OBJECT']"

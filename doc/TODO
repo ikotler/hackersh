@@ -51,8 +51,6 @@ Nice-to-Have
 Future
 ------
 
-- Plugins System?
-
 - Add support for SQLLite3 (and other?) backend
 
 - Implement `cast` built-in command.

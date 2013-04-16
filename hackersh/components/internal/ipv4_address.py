@@ -16,35 +16,40 @@
 # along with Hackersh; see the file COPYING.  If not,
 # see <http://www.gnu.org/licenses/>.
 
-# Version
-
-try:
-
-    from _version import __version__
-
-    # Clean up namespace
-
-    del _version
-
-except ImportError as e:
-
-    from miscellaneous import get_version
-
-    __version__ = get_version()
-
-    # Clean up namespace
-
-    del e, get_version, miscellaneous
+import socket
 
 
-# API
+# Local imports
 
-try:
+import hackersh.objects
 
-    from objects import *
 
-except ImportError as e:
+# Metadata
 
-    # When imported by setup.py, it's expected that not all the dependencies will be there
+__author__ = "Itzik Kotler <xorninja@gmail.com>"
+__version__ = "0.1.0"
 
-    pass
+
+# Implementation
+
+class IPv4_Address(hackersh.objects.RootComponent):
+
+    def run(self, argv, context):
+
+        _context = False
+
+        try:
+
+            socket.inet_aton(argv[0])
+
+            _context = hackersh.objects.RemoteSessionContext(IPV4_ADDRESS=argv[0])
+
+        except socket.error, e:
+
+            self.logger.debug('Caught exception %s' % str(e))
+
+            # i.e. illegal IP address string passed to inet_aton
+
+            pass
+
+        return _context

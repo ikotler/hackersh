@@ -24,14 +24,13 @@ import xml.sax
 import csv
 import shlex
 import HTMLParser
-import types
 
 
 # Local imports
 
 import log
 import conio
-import util
+import miscellaneous
 import _ordereddict
 
 
@@ -164,7 +163,7 @@ class ExternalComponent(Component):
 
     def run(self, argv, context):
 
-        return self._processor(context, self._execute(util.which(self._kwargs.get('filename', self.DEFAULT_FILENAME))[:1] + argv, context))
+        return self._processor(context, self._execute(miscellaneous.which(self._kwargs.get('filename', self.DEFAULT_FILENAME))[:1] + argv, context))
 
     def _processor(self, context, data):
 

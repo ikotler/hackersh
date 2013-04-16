@@ -16,35 +16,40 @@
 # along with Hackersh; see the file COPYING.  If not,
 # see <http://www.gnu.org/licenses/>.
 
-# Version
-
-try:
-
-    from _version import __version__
-
-    # Clean up namespace
-
-    del _version
-
-except ImportError as e:
-
-    from miscellaneous import get_version
-
-    __version__ = get_version()
-
-    # Clean up namespace
-
-    del e, get_version, miscellaneous
+import socket
 
 
-# API
+# Local imports
 
-try:
+import hackersh.objects
 
-    from objects import *
 
-except ImportError as e:
+# Metadata
 
-    # When imported by setup.py, it's expected that not all the dependencies will be there
+__author__ = "Itzik Kotler <xorninja@gmail.com>"
+__version__ = "0.1.0"
 
-    pass
+
+# Implementation
+
+class Hostname(hackersh.objects.RootComponent):
+
+    def run(self, argv, context):
+
+        _context = False
+
+        try:
+
+            socket.gethostbyname(argv[0])
+
+            _context = hackersh.objects.RemoteSessionContext(HOSTNAME=argv[0])
+
+        except socket.error as e:
+
+            # i.e. socket.gaierror: [Errno -2] Name or service not known
+
+            self.logger.debug('Caught exception %s' % str(e))
+
+            pass
+
+        return _context

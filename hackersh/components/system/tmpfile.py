@@ -16,54 +16,23 @@
 # along with Hackersh; see the file COPYING.  If not,
 # see <http://www.gnu.org/licenses/>.
 
-import subprocess
 import tempfile
-import shlex
 
 
 # Local imports
 
-import objects
+import hackersh.objects
 
 
-# Classes
+# Metadata
 
-class System(objects.Component):
-
-    def __call__(self, arg):
-
-        cmd = shlex.split(self._kwargs['path']) + list(self._args)
-
-        self.logger.debug('Executing shell command %s' % ' '.join(cmd))
-
-        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.STDOUT)
-
-        (stdout_output, stderr_output) = p.communicate(arg)
-
-        return str(stdout_output)
+__author__ = "Itzik Kotler <xorninja@gmail.com>"
+__version__ = "0.1.0"
 
 
-class print_(objects.Component):
+# Implementation
 
-    def __call__(self, arg):
-
-        import sys
-
-        sys.stdout.write(str(arg) + '\n')
-
-        sys.stdout.flush()
-
-        return arg
-
-
-class Null(objects.Component):
-
-    def __call__(self, arg):
-
-        return ''
-
-
-class tmpfile(objects.Component):
+class tmpfile(hackersh.objects.Component):
 
     def __call__(self, arg):
 
@@ -76,10 +45,3 @@ class tmpfile(objects.Component):
         tfile.close()
 
         return ''
-
-
-class Alert(objects.Component):
-
-    def __call__(self, arg):
-
-        return arg.__class__(arg, **{'VULNERABILITIES': arg.get('VULNERABILITIES', []) + [self._kwargs]})

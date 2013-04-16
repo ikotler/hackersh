@@ -23,3 +23,8 @@ VERBOSE_LEVELS = [logging.WARNING, logging.INFO, logging.DEBUG]
 
 
 logging.basicConfig(format="%(asctime)s %(name)s: [%(levelname)s] %(message)s", datefmt='%b %d %R:%S', level=logging.ERROR)
+
+
+# Default Logger
+
+logger = logging.getLogger('hackersh')

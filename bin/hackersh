@@ -40,15 +40,11 @@ except ImportError:
 
 
 import hackersh
-import hackersh.network
-import hackersh.misc
+import hackersh.components
 import hackersh.conio
 import hackersh.log
-import hackersh.util
+import hackersh.miscellaneous
 import hackersh.objects
-
-
-logger = hackersh.log.logging.getLogger('hackersh')
 
 
 # Hackersh Console
@@ -94,7 +90,7 @@ class HackershInteractiveConsole(code.InteractiveConsole):
 
         except IOError, e:
 
-            logger.warn('Reading history file %s failed due to %s' % (histfile, e))
+            hackersh.log.logger.warn('Reading history file %s failed due to %s' % (histfile, e))
 
             # No history file
 
@@ -113,7 +109,7 @@ class HackershInteractiveConsole(code.InteractiveConsole):
             if code_ == "pass":
 
                 return
-            
+
             else:
 
                 code_ = hackersh2pythonect(code_, self.locals)
@@ -122,7 +118,7 @@ class HackershInteractiveConsole(code.InteractiveConsole):
 
                     return
 
-                logger.debug('Evaluating `%s`' % code_)
+                hackersh.log.logger.debug('Evaluating `%s`' % code_)
 
                 return_value = pythonect.eval(code_, {}, self.locals)
 
@@ -206,7 +202,7 @@ def __fix_expression(operator, expression, sym_tbl):
 
             if not os.path.isfile(external_component_path):
 
-                external_component_path = hackersh.utils.which(expression_cmd[0])[0]
+                external_component_path = hackersh.miscellaneous.which(expression_cmd[0])[0]
 
                 if not external_component_path:
 
@@ -238,7 +234,7 @@ def hackersh2pythonect(code, sym_tbl):
         for operator, expression in program:
 
             # e.g. 'localhost' -> [nslookup, hostname] -> nmap -> ...'
-    
+
             # NOTE: This should be replaced by something that uses ast.parse()
 
             if expression.strip()[0] == '[':
@@ -268,7 +264,7 @@ def hackersh2pythonect(code, sym_tbl):
                                 _new_expression_buffer = _new_expression_buffer + ' ' + element[0] + ' '
 
                         _new_expression = _new_expression_buffer
-                            
+
                     else:
 
                         (new_operator, _new_expression) = __fix_expression(operator, expression_in_list, sym_tbl)
@@ -276,7 +272,7 @@ def hackersh2pythonect(code, sym_tbl):
                     _expression.append(_new_expression)
 
                 new_expression = '[' + ','.join(_expression) + ']'
-            
+
             else:
 
                 new_operator, new_expression = __fix_expression(operator, expression, sym_tbl)
@@ -288,11 +284,14 @@ def hackersh2pythonect(code, sym_tbl):
     return code_
 
 
+def set_or_update_env():
+
+    os.environ['HACKERSHPATH'] = os.path.pathsep.join(os.getenv('HACKERSHPATH', '').split(os.path.pathsep) + map(lambda x: os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'hackersh/components')) + '/' + x, ['system', 'internal', 'external']))
+
+
 def main():
 
     locals_ = {}
-
-    total_components = 0
 
     banner = "Hackersh version %s ( http://www.hackersh.org )" % hackersh.__version__
 
@@ -306,42 +305,34 @@ def main():
 
     args = parser.parse_args()
 
+    # Set or Update Hackersh Environment Variables
+
+    set_or_update_env()
+
     # Setup logging level
 
     if args.verbose:
 
-        logger.setLevel(hackersh.log.logging.ERROR - ((args.verbose % 4) * 10))
+        hackersh.log.logger.setLevel(hackersh.log.logging.ERROR - ((args.verbose % 4) * 10))
 
-    logger.info('Using [Pythonect %s]' % pythonect.__version__)
-    logger.info('Started Hackersh with args = %s' % args)
+    hackersh.log.logger.info('Using [Pythonect %s]' % pythonect.__version__)
+    hackersh.log.logger.info('Started Hackersh with args = %s' % args)
 
-    # Extract hackersh into locals_
+    # Add current working directory to sys.path
 
-    for component_library in ('hackersh.network', 'hackersh.misc'):
+    sys.path.insert(0, os.getcwd())
 
-        for name in dir(sys.modules[component_library]):
+    # Extract components into locals_
 
-            if not name.startswith('_'):
+    components = hackersh.components.get_all_components(os.getenv('HACKERSHPATH'))
 
-                obj = getattr(sys.modules[component_library], name)
+    if not components:
 
-                try:
+        hackersh.log.logger.warn('No components were found!')
 
-                    if obj != hackersh.Component and issubclass(obj, hackersh.Component):
+    else:
 
-                        locals_[name.lower()] = obj
-
-                        logger.debug('Registering %s as %s' % (obj, name.lower()))
-
-                        total_components = total_components + 1
-
-                except TypeError:
-
-                        pass
-
-    if not total_components:
-
-        logger.warn('No components were found!')
+        locals_.update(components)
 
     # Script-mode (i.e. ./hackersh script or #!/usr/bin/env hackersh)
 
@@ -358,10 +349,6 @@ def main():
         # Change prompt
 
         sys.ps1 = '% '
-
-        # Add current working directory to sys.path
-
-        sys.path.insert(0, os.getcwd())
 
         motd = "Welcome to Hacker Shell Version %s!" % hackersh.__version__
 

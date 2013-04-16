@@ -16,35 +16,37 @@
 # along with Hackersh; see the file COPYING.  If not,
 # see <http://www.gnu.org/licenses/>.
 
-# Version
+# Local imports
 
-try:
-
-    from _version import __version__
-
-    # Clean up namespace
-
-    del _version
-
-except ImportError as e:
-
-    from miscellaneous import get_version
-
-    __version__ = get_version()
-
-    # Clean up namespace
-
-    del e, get_version, miscellaneous
+import hackersh.objects
 
 
-# API
+# Metadata
 
-try:
+__author__ = "Itzik Kotler <xorninja@gmail.com>"
+__version__ = "0.1.0"
 
-    from objects import *
 
-except ImportError as e:
+# Implementation
 
-    # When imported by setup.py, it's expected that not all the dependencies will be there
+class Ping(hackersh.objects.ExternalComponentReturnValueOutput):
 
-    pass
+    def _processor(self, context, data):
+
+        retval = False
+
+        # i.e. Return Value == 0
+
+        if data == 0:
+
+            retval = hackersh.objects.RemoteSessionContext(context, PINGABLE=True)
+
+        return retval
+
+    # Consts
+
+    DEFAULT_FILENAME = "ping"
+
+    DEFAULT_OUTPUT_OPTIONS = "-c 3"
+
+    DEFAULT_QUERY = DEFAULT_FILTER = "context['HOSTNAME'] or context['IPV4_ADDRESS']"
