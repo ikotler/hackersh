@@ -1,6 +1,6 @@
 # Hackersh Changelog
 
-o Break hackersh/network.py and hackersh/misc.py to multiple files and
+o Split hackersh/network.py and hackersh/misc.py into multiple files and
   implement a simple plug-in architecture to load them during startup
 
 o Add support for BackTrack 5R3 and 5R2
