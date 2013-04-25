@@ -16,36 +16,9 @@
 # along with Hackersh; see the file COPYING.  If not,
 # see <http://www.gnu.org/licenses/>.
 
-# Version
 
-try:
+class HackershError(Exception):
 
-    from _version import __version__
-
-    # Clean up namespace
-
-    del _version
-
-except ImportError as e:
-
-    from miscellaneous import get_version
-
-    __version__ = get_version()
-
-    # Clean up namespace
-
-    del e, get_version, miscellaneous
-
-
-# API
-
-try:
-
-    from objects import *
-    from exceptions import *
-
-except ImportError as e:
-
-    # When imported by setup.py, it's expected that not all the dependencies will be there
-
-    pass
+    def __init__(self, context, msg):
+        self.context = context
+        self.msg = msg

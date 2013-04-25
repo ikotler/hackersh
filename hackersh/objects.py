@@ -32,6 +32,7 @@ import log
 import conio
 import miscellaneous
 import _ordereddict
+import exceptions
 
 
 # Component Classes
@@ -62,7 +63,7 @@ class Component(object):
 
                 self.logger.debug("Filter %s is False" % self._kwargs.get('filter', self.DEFAULT_FILTER))
 
-                return False
+                raise exceptions.HackershError(context, "%s: not enough data to start" % self.__class__.__name__.lower())
 
         self.logger.debug("Filter %s is True" % self._kwargs.get('filter', self.DEFAULT_FILTER))
 
@@ -163,7 +164,21 @@ class ExternalComponent(Component):
 
     def run(self, argv, context):
 
-        return self._processor(context, self._execute(miscellaneous.which(self._kwargs.get('filename', self.DEFAULT_FILENAME))[:1] + argv, context))
+        filename = self._kwargs.get('filename', self.DEFAULT_FILENAME)
+
+        self.logger.debug('FILENAME = ' + filename)
+
+        path = miscellaneous.which(filename)[:1]
+
+        if not path:
+
+            self.logger.debug("NO PATH!")
+
+            raise exceptions.HackershError(context, "%s: command not found" % self._kwargs.get('filename', self.DEFAULT_FILENAME))
+
+        self.logger.debug('PATH = ' + path[0])
+
+        return self._processor(context, self._execute(path + argv, context))
 
     def _processor(self, context, data):
 
@@ -248,7 +263,7 @@ class ExternalComponentFileOutput(ExternalComponent):
 
             if not contexts:
 
-                raise Exception("Unable to parse: " + str(data))
+                raise exceptions.HackershError(context, "%s: unable to parse: %s" % (self.__class__.__name__.lower(), str(data)))
 
             return contexts
 

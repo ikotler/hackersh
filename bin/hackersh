@@ -152,6 +152,10 @@ class HackershInteractiveConsole(code.InteractiveConsole):
 
             raise
 
+        except hackersh.HackershError as e:
+
+            print e.msg
+
         except:
 
             self.showtraceback()

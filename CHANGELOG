@@ -1,5 +1,10 @@
 # Hackersh Changelog
 
+o Implement HackershError Exception class and add 3 new error messages:
+    XXX: not enough data to start (if Component Filter is False)
+    XXX: command not found (if Ext. Component filename is missing)
+    XXX: unable to parse (if all Output Handlers failed)
+
 o Split hackersh/network.py and hackersh/misc.py into multiple files and
   implement a simple plug-in architecture to load them during startup
 
