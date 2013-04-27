@@ -19,6 +19,15 @@
 import subprocess
 import re
 import os
+import shlex
+
+
+def shell_split(s):
+    lex = shlex.shlex(s)
+    lex.quotes = '"'
+    lex.whitespace_split = True
+    lex.commenters = ''
+    return list(lex)
 
 
 # https://twistedmatrix.com/trac/browser/tags/releases/twisted-8.2.0/twisted/python/procutils.py

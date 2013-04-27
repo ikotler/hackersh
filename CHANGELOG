@@ -1,5 +1,8 @@
 # Hackersh Changelog
 
+o Implement shell_split() and replace shlex.split() with it. shell_split()
+  will not remove double quotes (i.e. "") when splitting DEFAULT_QUERY.
+
 o sqlmap: Change DEFAULT_QUERY to use "inline IF" to avoid:
       TypeError: unsupported operand type(s) for +: 'bool' and 'str'
   Whenever:

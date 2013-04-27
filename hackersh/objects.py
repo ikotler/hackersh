@@ -22,7 +22,6 @@ import subprocess
 import types
 import xml.sax
 import csv
-import shlex
 import HTMLParser
 
 
@@ -73,13 +72,13 @@ class Component(object):
 
         try:
 
-            argv = shlex.split(self._args[0] + ' ' + component_args_as_str)
+            argv = miscellaneous.shell_split(self._args[0] + ' ' + component_args_as_str)
 
         except IndexError:
 
             try:
 
-                argv = shlex.split(component_args_as_str)
+                argv = miscellaneous.shell_split(component_args_as_str)
 
             except Exception:
 
@@ -217,7 +216,7 @@ class ExternalComponentFileOutput(ExternalComponent):
 
             self.logger.debug('CMD = ' + cmd)
 
-            p = subprocess.Popen(shlex.split(cmd), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            p = subprocess.Popen(miscellaneous.shell_split(cmd), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
             (stdout_output, stderr_output) = p.communicate(input=self._kwargs.get('stdin', self.DEFAULT_STDIN_BUFFER))
 
@@ -280,7 +279,7 @@ class ExternalComponentStdoutOutput(ExternalComponent):
 
         self.logger.debug('CMD = ' + cmd)
 
-        p = subprocess.Popen(shlex.split(cmd), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        p = subprocess.Popen(miscellaneous.shell_split(cmd), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         p_stdout = p.communicate(input=self._kwargs.get('stdin', self.DEFAULT_STDIN_BUFFER))[0]
 
@@ -297,7 +296,7 @@ class ExternalComponentReturnValueOutput(ExternalComponent):
 
         self.logger.debug('CMD = ' + cmd)
 
-        p = subprocess.Popen(shlex.split(cmd), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        p = subprocess.Popen(miscellaneous.shell_split(cmd), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         p.wait()
 
