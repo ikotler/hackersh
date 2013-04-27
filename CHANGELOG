@@ -1,5 +1,8 @@
 # Hackersh Changelog
 
+o Introduce `domain` - new root component for processing domain names. 
+  Example: "hackersh.org" -> domain -> ...
+
 o Implement HackershError Exception class and add 3 new error messages:
     XXX: not enough data to start (if Component Filter is False)
     XXX: command not found (if Ext. Component filename is missing)
