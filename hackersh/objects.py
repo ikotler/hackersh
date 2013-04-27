@@ -34,6 +34,8 @@ import _ordereddict
 import exceptions
 
 
+
+
 # Component Classes
 
 class Component(object):
@@ -67,6 +69,8 @@ class Component(object):
         self.logger.debug("Filter %s is True" % self._kwargs.get('filter', self.DEFAULT_FILTER))
 
         component_args_as_str = eval(self._kwargs.get('query', self.DEFAULT_QUERY), {'context': context})
+
+        self.logger.debug("Query = %s" % component_args_as_str)
 
         argv = []
 
@@ -184,7 +188,22 @@ class ExternalComponent(Component):
         raise NotImplementedError
 
 
-class ExternalComponentFileOutput(ExternalComponent):
+class ExternalComponentReturnValueOutput(ExternalComponent):
+
+    def _execute(self, argv, context):
+
+        cmd = argv[0] + ' ' + self._kwargs.get('output_opts', self.DEFAULT_OUTPUT_OPTIONS) + " " + ' '.join(argv[1:])
+
+        self.logger.debug('CMD = ' + cmd)
+
+        p = subprocess.Popen(miscellaneous.shell_split(cmd), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+        p.wait()
+
+        return p.returncode
+
+
+class ExternalComponentStreamOutput(ExternalComponent):
 
     def __init__(self, *args, **kwargs):
 
@@ -271,7 +290,48 @@ class ExternalComponentFileOutput(ExternalComponent):
             return data
 
 
-class ExternalComponentStdoutOutput(ExternalComponent):
+class ExternalComponentFileOutput(ExternalComponentStreamOutput):
+
+    def _execute(self, argv, context):
+
+        tmpfile = tempfile.NamedTemporaryFile(delete=False)
+
+        fname = tmpfile.name
+
+        data = ""
+
+        try:
+
+            cmd = argv[0] + ' ' + self._kwargs.get('output_opts', self.DEFAULT_OUTPUT_OPTIONS) + " " + tmpfile.name + " " + ' '.join(argv[1:])
+
+            self.logger.debug('CMD = ' + cmd)
+
+            p = subprocess.Popen(miscellaneous.shell_split(cmd), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+            (stdout_output, stderr_output) = p.communicate(input=self._kwargs.get('stdin', self.DEFAULT_STDIN_BUFFER))
+
+            self.logger.debug(stdout_output)
+
+            tmpfile.flush()
+
+            os.fsync(tmpfile.fileno())
+
+            tmpfile.close()
+
+            tmpfile = open(fname, 'r')
+
+            data = tmpfile.read()
+
+            self.logger.debug('DATA (%d bytes) = %s' % (len(data), data))
+
+        except Exception:
+
+            os.remove(fname)
+
+        return data
+
+
+class ExternalComponentStdoutOutput(ExternalComponentStreamOutput):
 
     def _execute(self, argv, context):
 
@@ -288,21 +348,6 @@ class ExternalComponentStdoutOutput(ExternalComponent):
         return p_stdout
 
 
-class ExternalComponentReturnValueOutput(ExternalComponent):
-
-    def _execute(self, argv, context):
-
-        cmd = argv[0] + ' ' + self._kwargs.get('output_opts', self.DEFAULT_OUTPUT_OPTIONS) + " " + ' '.join(argv[1:])
-
-        self.logger.debug('CMD = ' + cmd)
-
-        p = subprocess.Popen(miscellaneous.shell_split(cmd), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-
-        p.wait()
-
-        return p.returncode
-
-
 # Datatype Classes
 
 class OutputHandler:
@@ -316,6 +361,25 @@ class OutputHandler:
     def parse(self):
 
         raise NotImplementedError
+
+
+# Pseudo SAX Content Handler for Stdout Output
+
+class StdoutOutputHandler(OutputHandler):
+
+    def startDocument():
+        pass
+
+    def endDocument():
+        pass
+
+    def parse(self, data):
+
+        self.startDocument()
+
+        self.feed(data)
+
+        self.endDocument()
 
 
 # Pseudo SAX Content Handler for CSV

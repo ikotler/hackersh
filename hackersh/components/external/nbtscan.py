@@ -27,38 +27,40 @@ import hackersh.objects
 # Metadata
 
 __author__ = "Itzik Kotler <xorninja@gmail.com>"
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 
 # Implementation
 
-class Nbtscan(hackersh.objects.ExternalComponentStdoutOutput):
+class NbtScan(hackersh.objects.ExternalComponentStdoutOutput):
 
-    def _processor(self, context, data):
+    class NbtScanStdoutOutputHandler(hackersh.objects.StdoutOutputHandler):
 
-        names = {}
+        def startDocument(self):
 
-        for row in csv.reader(data.split('\n'), delimiter=','):
+            self._names = {}
 
-            # i.e. 192.168.1.106,TV             ,Workstation Service
+        def feed(self, data):
 
-            try:
+            for row in csv.reader(data.split('\n'), delimiter=','):
 
-                (ip_addr, group_name, netbios_service) = row[:3]
+                # i.e. 192.168.1.106,TV             ,Workstation Service
 
-                names[group_name.strip().upper()] = names.get(group_name.strip().upper(), []) + [netbios_service.strip()]
+                try:
 
-            except Exception:
+                    (ip_addr, group_name, netbios_service) = row[:3]
 
-                pass
+                    self._names[group_name.strip().upper()] = self._names.get(group_name.strip().upper(), []) + [netbios_service.strip()]
 
-        if not names:
+                except Exception:
 
-            return False
+                    pass
 
-        else:
+        def endDocument(self):
 
-            return hackersh.objects.RemoteSessionContext(context, **{'PROTO': 'UDP', 'PORT': '137', 'SERVICE': 'NETBIOS-NS', 'NETBIOS-NS': {'NAMES': names}})
+            if self._names:
+
+                self._output.append(hackersh.objects.RemoteSessionContext(self._context, **{'PROTO': 'UDP', 'PORT': '137', 'SERVICE': 'NETBIOS-NS', 'NETBIOS-NS': {'NAMES': self._names}}))
 
     # Consts
 

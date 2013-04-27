@@ -24,7 +24,7 @@ import hackersh.objects
 # Metadata
 
 __author__ = "Itzik Kotler <xorninja@gmail.com>"
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 
 
 # Implementation
@@ -47,39 +47,47 @@ class SqlMap(hackersh.objects.ExternalComponentStdoutOutput):
     #     Payload: id=vGep' AND 7534=BENCHMARK(5000000,MD5(0x6d704e4c)) AND 'eALp'='eALp&Submit=Submit
     # ---
 
-    def _processor(self, context, data):
+    class SqlMapStdoutOutputHandler(hackersh.objects.StdoutOutputHandler):
 
-        vulnerabilities = []
+        def startDocument(self):
 
-        for vuln_parameter in data.split('---'):
+            self._vulnerabilities = []
 
-            if vuln_parameter.startswith('\nPlace'):
+        def feed(self, data):
 
-                entry = {}
+            for vuln_parameter in data.split('---'):
 
-                for line in vuln_parameter.split('\n'):
+                if vuln_parameter.startswith('\nPlace'):
 
-                    if line.find(':') == -1:
+                    entry = {}
 
-                        if entry:
+                    for line in vuln_parameter.split('\n'):
 
-                            # Fixup: if GET && Append URL to NAMELINK Value
+                        if line.find(':') == -1:
 
-                            if entry['Place'] == 'GET':
+                            if entry:
 
-                                entry['DESTINATION'] = context['URL'] + entry['DESTINATION']
+                                # Fixup: if GET && Append URL to NAMELINK Value
 
-                            vulnerabilities.append(dict(entry))
+                                if entry['Place'] == 'GET':
 
-                        continue
+                                    entry['DESTINATION'] = self._context['URL'] + entry['DESTINATION']
 
-                    (k, v) = line.lstrip().split(':')
+                                self.vulnerabilities.append(dict(entry))
 
-                    entry[self.SQLMAP_KEYS_TO_GENERIC_WEB_VULN_KEYS.get(k, k)] = v.lstrip()
+                            continue
 
-        return hackersh.objects.RemoteSessionContext(context, **{'VULNERABILITIES': context.get('VULNERABILITIES', []) + vulnerabilities})
+                        (k, v) = line.lstrip().split(':')
 
-    SQLMAP_KEYS_TO_GENERIC_WEB_VULN_KEYS = {'Title': 'DESCRIPTION', 'Payload': 'DESTINATION'}
+                        entry[self.SQLMAP_KEYS_TO_GENERIC_WEB_VULN_KEYS.get(k, k)] = v.lstrip()
+
+        def endDocument(self):
+
+            self._output.append(hackersh.objects.RemoteSessionContext(self._context, **{'VULNERABILITIES': self._context.get('VULNERABILITIES', []) + self._vulnerabilities}))
+
+        # Consts
+
+        SQLMAP_KEYS_TO_GENERIC_WEB_VULN_KEYS = {'Title': 'DESCRIPTION', 'Payload': 'DESTINATION'}
 
     # Consts
 
