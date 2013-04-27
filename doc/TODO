@@ -8,6 +8,8 @@ Priority
 
 - Add Documentation
 
+- Test IPv6 Components
+
 
 Nice-to-Have
 ------------
@@ -46,6 +48,8 @@ Nice-to-Have
 - Implement an `alias` built-in command
 
 - Add '.' commands (aka. built-in commands).
+
+- Cross-platform API to get network routing
 
 
 Future

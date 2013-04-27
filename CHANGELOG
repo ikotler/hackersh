@@ -1,5 +1,8 @@
 # Hackersh Changelog
 
+o Introduce `ipv6_address` - new root component for processing IPv6 Address. 
+  Example: "::1" -> ipv6_address -> ...
+
 o Introduce `domain` - new root component for processing domain names. 
   Example: "hackersh.org" -> domain -> ...
 
