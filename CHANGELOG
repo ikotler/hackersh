@@ -1,5 +1,10 @@
 # Hackersh Changelog
 
+o sqlmap: Change DEFAULT_QUERY to use "inline IF" to avoid:
+      TypeError: unsupported operand type(s) for +: 'bool' and 'str'
+  Whenever:
+      context['COOKIES'] = False
+
 o Introduce `ipv6_address` - new root component for processing IPv6 Address. 
   Example: "::1" -> ipv6_address -> ...
 

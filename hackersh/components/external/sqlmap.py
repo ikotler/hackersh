@@ -24,7 +24,7 @@ import hackersh.objects
 # Metadata
 
 __author__ = "Itzik Kotler <xorninja@gmail.com>"
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 
 # Implementation
@@ -90,4 +90,4 @@ class SqlMap(hackersh.objects.ExternalComponentStdoutOutput):
     DEFAULT_FILTER = "context['URL']"
 
     DEFAULT_QUERY = \
-        "(context['COOKIES'] and '--cookie ' + str(context['COOKIES'])) + ' -u ' + context['URL']"
+        "(('--cookie ' + str(context['COOKIES'])) if context['COOKIES'] else '') + ' -u ' + context['URL']"
