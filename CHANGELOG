@@ -1,5 +1,8 @@
 # Hackersh Changelog
 
+o amap, nikto, nmap, ping, w3af, xprobe2, and browse: Change DEFAULT_QUERY
+  to evaluate context['IPV4_ADDRESS'] before context['HOSTNAME']
+
 o Implement NbtScanStdoutOutputHandler class. Rewrite nbtscan to use it
 
 o Implement SqlMapStdoutOutputHandler class. Rewrite sqlmap to use it

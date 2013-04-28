@@ -24,7 +24,7 @@ import hackersh.objects
 # Metadata
 
 __author__ = "Itzik Kotler <xorninja@gmail.com>"
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 
 # Implementation
@@ -78,7 +78,7 @@ class Amap(hackersh.objects.ExternalComponentFileOutput):
     DEFAULT_OUTPUT_OPTIONS = "-m -o"
 
     DEFAULT_FILTER = \
-        "(context['HOSTNAME'] or context['IPV4_ADDRESS']) and context['PROTO'] == 'TCP'"
+        "(context['IPV4_ADDRESS'] or context['HOSTNAME']) and context['PROTO'] == 'TCP'"
 
     DEFAULT_QUERY = \
-        "(context['HOSTNAME'] or context['IPV4_ADDRESS']) + ' ' + context['PORT']"
+        "(context['IPV4_ADDRESS'] or context['HOSTNAME']) + ' ' + context['PORT']"

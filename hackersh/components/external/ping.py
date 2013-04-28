@@ -24,7 +24,7 @@ import hackersh.objects
 # Metadata
 
 __author__ = "Itzik Kotler <xorninja@gmail.com>"
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 
 # Implementation
@@ -49,4 +49,4 @@ class Ping(hackersh.objects.ExternalComponentReturnValueOutput):
 
     DEFAULT_OUTPUT_OPTIONS = "-c 3"
 
-    DEFAULT_QUERY = DEFAULT_FILTER = "context['HOSTNAME'] or context['IPV4_ADDRESS']"
+    DEFAULT_QUERY = DEFAULT_FILTER = "context['IPV4_ADDRESS'] or context['HOSTNAME']"
