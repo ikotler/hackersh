@@ -1,5 +1,8 @@
 # Hackersh Changelog
 
+o Implement SimpleRegExHandler class - a new Pseudo SAX Content Handler
+  class for processing output using regex
+
 o amap, nikto, nmap, ping, w3af, xprobe2, and browse: Change DEFAULT_QUERY
   to evaluate context['IPV4_ADDRESS'] before context['HOSTNAME']
 

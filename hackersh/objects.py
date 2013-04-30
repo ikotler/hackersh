@@ -23,6 +23,7 @@ import types
 import xml.sax
 import csv
 import HTMLParser
+import re
 
 
 # Local imports
@@ -32,8 +33,6 @@ import conio
 import miscellaneous
 import _ordereddict
 import exceptions
-
-
 
 
 # Component Classes
@@ -273,10 +272,6 @@ class ExternalComponentStreamOutput(ExternalComponent):
 
                 handler_instance.parse(data)
 
-                if contexts:
-
-                    break
-
             # No Output Handler could process output, unknown format?
 
             if not contexts:
@@ -361,6 +356,21 @@ class OutputHandler:
     def parse(self):
 
         raise NotImplementedError
+
+
+# Pseudo SAX Content Handler for Simple Regualr Expression Match Handler
+
+class SimpleRegExHandler(OutputHandler):
+
+    def parse(self, data):
+
+        regex = re.compile(self.PATTERN)
+
+        for match in regex.finditer(data):
+
+            self._output.append(self._context.__class__(self._context, **match.groupdict()))
+
+    PATTERN = ""
 
 
 # Pseudo SAX Content Handler for Stdout Output
