@@ -67,7 +67,7 @@ class Build(distutils.command.build.build):
 
 if __name__ == "__main__":
 
-    dependencies = ['pythonect>=0.4.2', 'prettytable>=0.6.1', 'netaddr>=0.7.10']
+    dependencies = ['pythonect==0.4.2', 'prettytable>=0.6.1', 'netaddr>=0.7.10']
 
     major, minor = sys.version_info[:2]
 
