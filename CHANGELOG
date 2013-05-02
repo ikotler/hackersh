@@ -1,5 +1,7 @@
 # Hackersh Changelog
 
+Hackersh 0.2 [2013-05-02]
+
 o Introduce `dnsdict6` - new external component for:
   Information Gathering / Network Analysis / DNS Analysis
   dnsdict6 v1.8 (c) 2011 by van Hauser / THC <vh@thc.org> www.thc.org
