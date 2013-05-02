@@ -290,7 +290,7 @@ def hackersh2pythonect(code, sym_tbl):
 
 def set_or_update_env():
 
-    os.environ['HACKERSHPATH'] = os.path.pathsep.join(os.getenv('HACKERSHPATH', '').split(os.path.pathsep) + map(lambda x: os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'hackersh/components')) + '/' + x, ['system', 'internal', 'external']))
+    os.environ['HACKERSHPATH'] = os.path.pathsep.join(os.getenv('HACKERSHPATH', '').split(os.path.pathsep) + map(lambda x: os.path.abspath(os.path.join(os.path.dirname(hackersh.components.__file__), '..', 'components')) + '/' + x, ['system', 'internal', 'external']))
 
 
 def main():
