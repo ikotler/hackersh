@@ -43,7 +43,8 @@ try:
 
     from objects import *
     from exceptions import *
-
+    from eval import eval
+    
 except ImportError as e:
 
     # When imported by setup.py, it's expected that not all the dependencies will be there
