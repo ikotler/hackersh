@@ -152,6 +152,7 @@ def main():
 
     parser.add_argument('script', metavar='file', nargs='?', type=argparse.FileType('rt'))
     parser.add_argument('--verbose', '-v', action='count', default=0)
+    parser.add_argument('--quiet', '-q', help='Do not print the normal Hackersh welcome', action='store_true', default=0)
     parser.add_argument('--version', '-V', action='version', version=banner)
 
     args = parser.parse_args()
@@ -218,7 +219,7 @@ def main():
 
         banner = "Hackersh Version %s\nCopyright (C) 2013 Itzik Kotler\nVisit http://www.hackersh.org for updates.\n" % hackersh.__version__
 
-        HackershInteractiveConsole(locals_).interact(banner + hackersh.conio.draw_msgbox(motd))
+        HackershInteractiveConsole(locals_).interact(banner + hackersh.conio.draw_msgbox(motd) if not args.quiet else '')
 
     return 0
 
