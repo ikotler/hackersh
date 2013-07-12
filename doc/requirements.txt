@@ -1,4 +1,5 @@
 # requirements.txt for Python's PIP (see: http://www.pip-installer.org/en/latest/requirements.html)
-pythonect>=0.4.2 
-prettytable>=0.6.1
+pythonect>=0.6.0
+prettytable>=0.6.1,
 netaddr>=0.7.10
+networkx>=1.7

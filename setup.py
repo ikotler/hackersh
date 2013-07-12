@@ -67,7 +67,7 @@ class Build(distutils.command.build.build):
 
 if __name__ == "__main__":
 
-    dependencies = ['pythonect==0.4.2', 'prettytable>=0.6.1', 'netaddr>=0.7.10']
+    dependencies = ['pythonect>=0.6.0', 'networkx>=1.7', 'prettytable>=0.6.1', 'netaddr>=0.7.10']
 
     major, minor = sys.version_info[:2]
 
@@ -93,7 +93,7 @@ if __name__ == "__main__":
         long_description=open('README.rst').read(),
 
         scripts=['bin/hackersh'],
-
+        data_files=[('', ['COPYING'])],
         packages=setuptools.find_packages(),
 
         classifiers=[
