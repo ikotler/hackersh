@@ -3,5 +3,4 @@
 /dist/
 /build/
 *.egg-info
-_version*
 .DS_Store
