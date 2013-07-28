@@ -16,37 +16,11 @@
 # along with Hackersh; see the file COPYING.  If not,
 # see <http://www.gnu.org/licenses/>.
 
-# Version
-
-try:
-
-    from _version import __version__
-
-    # Clean up namespace
-
-    del _version
-
-except ImportError as e:
-
-    from miscellaneous import get_version
-
-    __version__ = get_version()
-
-    # Clean up namespace
-
-    del e, get_version, miscellaneous
+from _version import __version__
 
 
 # API
 
-try:
-
-    from objects import *
-    from exceptions import *
-    from eval import eval
-    
-except ImportError as e:
-
-    # When imported by setup.py, it's expected that not all the dependencies will be there
-
-    pass
+from objects import *
+from exceptions import *
+from eval import eval

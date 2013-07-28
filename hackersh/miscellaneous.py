@@ -16,8 +16,6 @@
 # along with Hackersh; see the file COPYING.  If not,
 # see <http://www.gnu.org/licenses/>.
 
-import subprocess
-import re
 import os
 import shlex
 
@@ -59,42 +57,3 @@ def which(name, flags=os.X_OK):
                 result.append(pext)
 
     return result
-
-
-def get_version():
-
-    version = "0.0.0.dev0"
-
-    try:
-
-        git = subprocess.Popen(['git', 'describe'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-
-        git.stderr.close()
-
-        git_output = git.stdout.readlines()[0]
-
-        git_ver = re.match('^\w+(?P<MAJOR>\d+)\.(?P<MINOR>\d+)(\.(?P<MICRO>\d+)(\-(?P<DEV>\d+))?)?', git_output)
-
-        if git_ver is not None:
-
-            # MAJOR.MINOR
-
-            version = git_ver.group('MAJOR') + '.' + git_ver.group('MINOR')
-
-            if git_ver.groupdict('MICRO') is not None:
-
-                # MAJOR.MINOR.MICRO
-
-                version = version + '.' + git_ver.group('MICRO')
-
-                if git_ver.groupdict('DEV') is not None:
-
-                    # MAJOR.MINOR.MICRO-POST
-
-                    version = version + '.dev' + git_ver.group('DEV')
-
-    except Exception:
-
-        pass
-
-    return version
