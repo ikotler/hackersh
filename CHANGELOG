@@ -1,5 +1,14 @@
 # Hackersh Changelog
 
+HEAD
+
+o Add command line '--quiet/-q' to supress normal Hackersh welcome
+
+o Update to work with Pythonect 0.6.0 and NetworkX >= 1.7
+
+o Refactor Hackersh Interpreter, new eval.py file with eval() and parse() functions
+
+
 Hackersh 0.2 [2013-05-02]
 
 o Introduce `dnsdict6` - new external component for:
