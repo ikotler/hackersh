@@ -22,6 +22,7 @@ import sys
 # Local imports
 
 import hackersh.objects
+import hackersh.conio
 
 
 # Metadata
@@ -34,10 +35,30 @@ __version__ = "0.1.0"
 
 class print_(hackersh.objects.Component):
 
-    def __call__(self, arg):
+    def main(self, argv, context):
 
-        sys.stdout.write(str(arg) + '\n')
+        buf = ""
+
+        if isinstance(argv[0], hackersh.objects.Context):
+
+            for root_node in [node for node, degree in argv[0].as_graph().in_degree().items() if degree == 0]:
+
+                buf += '\n'.join(hackersh.conio.draw_graph_vertical(argv[0].as_graph(), root_node))
+
+                # Insert NL Between Root Nodes
+
+                buf += '\n'
+
+        elif isinstance(argv, list) and len(argv) == 1:
+
+            buf = str(argv[0])
+
+        else:
+
+            buf = str(argv)
+
+        sys.stdout.write(buf.strip() + '\n')
 
         sys.stdout.flush()
 
-        return arg
+        return context

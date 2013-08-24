@@ -34,9 +34,9 @@ __version__ = "0.1.0"
 
 class IPv4_Range(hackersh.objects.RootComponent):
 
-    def run(self, argv, context):
+    def main(self, argv, context):
 
-        contexts = []
+        _contexts = []
 
         ipv4_addresses_gen = None
 
@@ -66,10 +66,10 @@ class IPv4_Range(hackersh.objects.RootComponent):
 
             for ipv4_addr in ipv4_addresses_gen:
 
-                contexts.append(hackersh.objects.RemoteSessionContext(IPV4_ADDRESS=str(ipv4_addr)))
+                _contexts.append(dict(IPV4_ADDRESS=str(ipv4_addr)))
 
         except TypeError as e:
 
             pass
 
-        return contexts
+        return _contexts

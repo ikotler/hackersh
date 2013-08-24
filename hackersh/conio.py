@@ -130,3 +130,62 @@ def draw_msgbox(string):
     msgbox += '*' * 80 + '\n'
 
     return msgbox
+
+
+def draw_graph_vertical(graph, node):
+
+    lines = []
+
+    node_name = node[node.rfind('.') + 1:]
+
+    # i.e. str_bG9jYWxob3N0 ?
+
+    if node_name.startswith('str_'):
+
+        node_name = 'str'
+
+    # TODO: This should not be hardcoded, to be replaced with flexiable, user-defined, in runtime API.
+
+    try:
+
+        lines.append(graph.node[node]['URL'])
+
+    except KeyError:
+
+        try:
+
+            lines.append(graph.node[node]['PORT'] + '/' + graph.node[node]['PROTO'].lower() + ' (' + graph.node[node].get('SERVICE', '?').upper() + ')')
+
+        except KeyError:
+
+            try:
+
+                lines.append(str('Found #' + str(len(graph.node[node]['VULNERABILITIES'])) + ' Vulnerabilities'))
+
+            except KeyError:
+
+                lines.append(('"' if node_name == 'const' else '') + str(graph.node[node].values()[0]) + ('"' if node_name == 'const' else ''))
+
+    lines[-1] = lines[-1] + ' <via ' + node_name + '>'
+
+    if graph.node[node].get('VULNERABILITIES', False):
+
+        lines.append(
+            '\n' + \
+            draw_underline('Vulnerabilities:') + '\n' + \
+            draw_static_tbl(graph.node[node]['VULNERABILITIES'], ["VULNERABILITY DESCRIPTION", "URL"], ["DESCRIPTION", "DESTINATION"]) + '\n' \
+        )
+
+    last = graph.successors(node)[-1] if graph.successors(node) else None
+
+    for sucessor_node in graph.successors(node):
+
+        prefix = '`-' if sucessor_node is last else '+-'
+
+        for line in draw_graph_vertical(graph, sucessor_node):
+
+            lines.append(prefix + line)
+
+            prefix = '  ' if sucessor_node is last else '| '
+
+    return lines

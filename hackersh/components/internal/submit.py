@@ -31,7 +31,7 @@ __version__ = "0.1.0"
 
 class Submit(hackersh.objects.InternalComponent):
 
-    def run(self, argv, context):
+    def main(self, argv, context):
 
         br = argv[0]
 
@@ -43,6 +43,6 @@ class Submit(hackersh.objects.InternalComponent):
 
         response = br.submit()
 
-        return hackersh.objects.RemoteSessionContext(context, **{'BR_OBJECT': br, 'URL': response.geturl()})
+        return dict(BR_OBJECT=br, URL=response.geturl())
 
-    DEFAULT_FILTER = DEFAULT_QUERY = "context['BR_OBJECT']"
+    DEFAULT_FILTER = DEFAULT_QUERY = "BR_OBJECT"

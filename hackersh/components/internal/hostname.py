@@ -34,15 +34,15 @@ __version__ = "0.1.0"
 
 class Hostname(hackersh.objects.RootComponent):
 
-    def run(self, argv, context):
+    def main(self, argv, context):
 
-        _context = False
+        _context = dict()
 
         try:
 
             socket.gethostbyname(argv[0])
 
-            _context = hackersh.objects.RemoteSessionContext(HOSTNAME=argv[0])
+            _context['HOSTNAME'] = argv[0]
 
         except socket.error as e:
 

@@ -72,7 +72,7 @@ class Nikto(hackersh.objects.ExternalComponentFileOutput):
 
         def endDocument(self):
 
-            self._output.append(hackersh.objects.RemoteSessionContext(self._context, **{'VULNERABILITIES': self._context.get('VULNERABILITIES', []) + self._vulnerabilities}))
+            self._output.append({'VULNERABILITIES': self._vulnerabilities})
 
     # Consts
 
@@ -83,9 +83,9 @@ class Nikto(hackersh.objects.ExternalComponentFileOutput):
     DEFAULT_OUTPUT_OPTIONS = "-Format xml -o"
 
     DEFAULT_FILTER = \
-        "(context['SERVICE'] == 'HTTP' or context['SERVICE'] == 'HTTPS') and " \
-        "(context['IPV4_ADDRESS'] or context['HOSTNAME']) and " \
-        "context['PROTO'] == 'TCP'"
+        "(SERVICE == 'HTTP' or SERVICE == 'HTTPS') and " \
+        "(IPV4_ADDRESS or HOSTNAME) and " \
+        "PROTO == 'TCP'"
 
     DEFAULT_QUERY = \
-        "'-host ' + (context['IPV4_ADDRESS'] or context['HOSTNAME']) + ' -port ' + context['PORT']"
+        "'-host ' + (IPV4_ADDRESS or HOSTNAME) + ' -port ' + PORT"

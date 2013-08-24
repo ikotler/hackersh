@@ -60,7 +60,7 @@ class NbtScan(hackersh.objects.ExternalComponentStdoutOutput):
 
             if self._names:
 
-                self._output.append(hackersh.objects.RemoteSessionContext(self._context, **{'PROTO': 'UDP', 'PORT': '137', 'SERVICE': 'NETBIOS-NS', 'NETBIOS-NS': {'NAMES': self._names}}))
+                self._output.append({'PROTO': 'UDP', 'PORT': '137', 'SERVICE': 'NETBIOS-NS', 'NETBIOS-NS': {'NAMES': self._names}})
 
     # Consts
 
@@ -68,4 +68,4 @@ class NbtScan(hackersh.objects.ExternalComponentStdoutOutput):
 
     DEFAULT_OUTPUT_OPTIONS = "-v -h -q -s ,"
 
-    DEFAULT_FILTER = DEFAULT_QUERY = "context['IPV4_ADDRESS']"
+    DEFAULT_FILTER = DEFAULT_QUERY = "IPV4_ADDRESS"

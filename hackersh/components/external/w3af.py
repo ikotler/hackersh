@@ -20,6 +20,7 @@ import tempfile
 import os
 import subprocess
 import shlex
+import select
 
 
 # Local imports
@@ -103,7 +104,7 @@ class W3af(hackersh.objects.ExternalComponentFileOutput):
 
         def endDocument(self):
 
-            self._output.append(hackersh.objects.RemoteSessionContext(self._context, **{'VULNERABILITIES': self._context.get('VULNERABILITIES', []) + self._vulnerabilities}))
+            self._output.append({'VULNERABILITIES': self._vulnerabilities})
 
 #    class W3afCSVOutputHandler(hackersh.objects.CSVOutputHandler):
 #
@@ -261,6 +262,8 @@ class W3af(hackersh.objects.ExternalComponentFileOutput):
             "exit"
         ])
 
+        self.logger.debug('Script Output:\n%s' % '\n'.join(script_content))
+
         tmp_script_file.write('\n'.join(script_content))
 
         tmp_script_file.flush()
@@ -290,9 +293,9 @@ class W3af(hackersh.objects.ExternalComponentFileOutput):
     DEFAULT_FILENAME = "w3af_console"
 
     DEFAULT_FILTER = \
-        "(context['SERVICE'] == 'HTTP' or context['SERVICE'] == 'HTTPS') and " \
-        "(context['IPV4_ADDRESS'] or context['HOSTNAME']) and " \
-        "context['PROTO'] == 'TCP'"
+        "(SERVICE == 'HTTP' or SERVICE == 'HTTPS') and " \
+        "(IPV4_ADDRESS or HOSTNAME) and " \
+        "PROTO == 'TCP'"
 
     DEFAULT_QUERY = \
-        "context['URL'] or (context['SERVICE'].lower() + '://' + (context['IPV4_ADDRESS'] or context['HOSTNAME']) + ':' + context['PORT'])"
+        "URL or (SERVICE.lower() + '://' + (IPV4_ADDRESS or HOSTNAME) + ':' + PORT)"

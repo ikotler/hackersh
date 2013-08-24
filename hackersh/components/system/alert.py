@@ -29,8 +29,8 @@ __version__ = "0.1.0"
 
 # Implementation
 
-class Alert(hackersh.objects.Component):
+class Alert(hackersh.objects.InternalComponent):
 
-    def __call__(self, arg):
+    def main(self, context):
 
-        return arg.__class__(arg, **{'VULNERABILITIES': arg.get('VULNERABILITIES', []) + [self._kwargs]})
+        return dict(VULNERABILITIES=self._kwargs)

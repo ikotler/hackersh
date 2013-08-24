@@ -72,7 +72,7 @@ class Xprobe2(hackersh.objects.ExternalComponentFileOutput):
 
             if name == "primary" or name == "secondary":
 
-                self._os_guess.append(hackersh.objects.RemoteSessionContext(self._context, **self._entry))
+                self._os_guess.append(self._entry)
 
                 self._read_content = False
 
@@ -94,4 +94,4 @@ class Xprobe2(hackersh.objects.ExternalComponentFileOutput):
 
     DEFAULT_OUTPUT_OPTIONS = "-X -o"
 
-    DEFAULT_QUERY = DEFAULT_FILTER = "context['IPV4_ADDRESS'] or context['HOSTNAME']"
+    DEFAULT_QUERY = DEFAULT_FILTER = "IPV4_ADDRESS or HOSTNAME"

@@ -73,7 +73,7 @@ class SqlMap(hackersh.objects.ExternalComponentStdoutOutput):
 
                                     entry['DESTINATION'] = self._context['URL'] + entry['DESTINATION']
 
-                                self.vulnerabilities.append(dict(entry))
+                                self._vulnerabilities.append(dict(entry))
 
                             continue
 
@@ -83,7 +83,7 @@ class SqlMap(hackersh.objects.ExternalComponentStdoutOutput):
 
         def endDocument(self):
 
-            self._output.append(hackersh.objects.RemoteSessionContext(self._context, **{'VULNERABILITIES': self._context.get('VULNERABILITIES', []) + self._vulnerabilities}))
+            self._output.append({'VULNERABILITIES': self._vulnerabilities})
 
         # Consts
 
@@ -91,11 +91,11 @@ class SqlMap(hackersh.objects.ExternalComponentStdoutOutput):
 
     # Consts
 
-    DEFAULT_FILENAME = "sqlmap.py"
+    DEFAULT_FILENAME = "sqlmap"
 
     DEFAULT_OUTPUT_OPTIONS = ''
 
-    DEFAULT_FILTER = "context['URL']"
+    DEFAULT_FILTER = "URL"
 
     DEFAULT_QUERY = \
-        "(('--cookie ' + str(context['COOKIES'])) if context['COOKIES'] else '') + ' -u ' + context['URL']"
+        "(('--cookie ' + str(COOKIES)) if COOKIES else '') + ' -u ' + URL"

@@ -50,7 +50,9 @@ class _MozillaCookieJarAsCommandLineArgument(cookielib.MozillaCookieJar):
 
 class Browse(hackersh.objects.InternalComponent):
 
-    def run(self, argv, context):
+    def main(self, argv, context):
+
+        _context = dict()
 
         url = argv[0]
 
@@ -88,7 +90,7 @@ class Browse(hackersh.objects.InternalComponent):
 
             br.addheaders = [('User-agent', self._kwargs.get('ua'))]
 
-            context['USER-AGENT'] = self._kwargs['ua']
+            _context['USER-AGENT'] = self._kwargs['ua']
 
         # Open URL
 
@@ -100,18 +102,18 @@ class Browse(hackersh.objects.InternalComponent):
 
             print response.read()
 
-        return hackersh.objects.RemoteSessionContext(context, **{'BR_OBJECT': br, 'URL': url, 'COOKIES': cj})
+        return dict({'BR_OBJECT': br, 'URL': url, 'COOKIES': cj})
 
     DEFAULT_FILTER = \
         "(" \
-        " (context['SERVICE'] == 'HTTP' or context['SERVICE'] == 'HTTPS') and " \
-        " (context['IPV4_ADDRESS'] or context['HOSTNAME']) and " \
-        " context['PROTO'] == 'TCP'" \
+        " (SERVICE == 'HTTP' or SERVICE == 'HTTPS') and " \
+        " (IPV4_ADDRESS or HOSTNAME) and " \
+        " PROTO == 'TCP'" \
         ")" \
         "or" \
         "(" \
-        " context['URL']" \
+        " URL" \
         ")"
 
     DEFAULT_QUERY = \
-        "context['URL'] or (context['SERVICE'].lower() + '://' + (context['IPV4_ADDRESS'] or context['HOSTNAME']) + ':' + context['PORT'])"
+        "URL or (SERVICE.lower() + '://' + (IPV4_ADDRESS or HOSTNAME) + ':' + PORT)"

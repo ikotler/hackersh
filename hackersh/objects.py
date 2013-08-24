@@ -24,14 +24,16 @@ import xml.sax
 import csv
 import HTMLParser
 import re
+import networkx
+import pythonect.internal._graph
+import copy
+import pprint
 
 
 # Local imports
 
 import log
-import conio
 import miscellaneous
-import _ordereddict
 import exceptions
 
 
@@ -41,7 +43,7 @@ class Component(object):
 
     def __init__(self, *args, **kwargs):
 
-        self.DEFAULT_STDIN_BUFFER = None
+        # Save for __call__()
 
         self._args = args
 
@@ -49,27 +51,98 @@ class Component(object):
 
         self.logger = log.logging.getLogger(self.__class__.__name__.lower())
 
-        if 'debug' in kwargs:
+        # Debug?
+        if kwargs.get('debug', False):
 
             self.logger.setLevel(log.logging.DEBUG)
 
         self.logger.debug('Initialized %s with args = %s and kwargs = %s' % (repr(self), args, kwargs))
 
+    # Application Binary Interface-like
+
+    def run(self, argv, context):
+
+        return_value = []
+
+        self.logger.debug('In __run__ and calling %s' % self.main)
+
+        entry_or_entries = self.main(argv, context)
+
+        self.logger.debug('%s Returned:\n%s' % (self.main, pprint.pformat(entry_or_entries)))
+
+        if entry_or_entries:
+
+            if isinstance(entry_or_entries, list):
+
+                result_id = 0
+
+                for entry in entry_or_entries:
+
+                    entry_key = self.__class__.__name__.lower() + "_result_#" + str(result_id)
+
+                    self.logger.debug('Pushing %s = %s to return_value List' % (entry_key, entry))
+
+                    return_value.append(context.push(entry_key, entry))
+
+                    self.logger.debug('Pushed!')
+
+                    result_id += 1
+
+            elif isinstance(context, types.GeneratorType):
+
+                # TODO: Don't iterate Generator, wrap it with another Generator
+
+                pass
+
+            else:
+
+                if entry_or_entries == context:
+
+                    self.logger.debug('%s == %s, Thus, return_value List will be equal: [True]' % (entry_or_entries, repr(context)))
+
+                    return_value.append(True)
+
+                else:
+
+                    # return_value.append(context.push(self.__class__.__name__.lower(), entry_or_entries))
+
+                    self.logger.debug('Pushing %s = %s, return_list will be equal This Push Only' % (self.__class__.__name__.lower(), entry_or_entries))
+
+                    return_value = context.push(self.__class__.__name__.lower(), entry_or_entries)
+
+        # False or Empty List (i.e. [])
+
+        else:
+
+            self.logger.debug('entry_or_entries is False? return_value List will be equal: [False]')
+
+            return_value.append(False)
+
+        self.logger.debug('Returning from __run__ with %s' % pprint.pformat(return_value))
+
+        return return_value
+
     def __call__(self, arg):
+
+        retval = None
 
         context = arg
 
-        if not eval(self._kwargs.get('filter', self.DEFAULT_FILTER), {'context': context}):
+        self.logger.debug('In __call__ with %s' % pprint.pformat(repr(context)))
 
-                self.logger.debug("Filter %s is False" % self._kwargs.get('filter', self.DEFAULT_FILTER))
+        if not eval(self._kwargs.get('filter', self.DEFAULT_FILTER), {}, context):
 
-                raise exceptions.HackershError(context, "%s: not enough data to start" % self.__class__.__name__.lower())
+                self.logger.debug('Filter """%s""" is False' % self._kwargs.get('filter', self.DEFAULT_FILTER))
 
-        self.logger.debug("Filter %s is True" % self._kwargs.get('filter', self.DEFAULT_FILTER))
+                return False
 
-        component_args_as_str = eval(self._kwargs.get('query', self.DEFAULT_QUERY), {'context': context})
+                # raise exceptions.HackershError(context, "%s: not enough data to start" % self.__class__.__name__.lower())
 
-        self.logger.debug("Query = %s" % component_args_as_str)
+        self.logger.debug('Filter """%s""" is True' % self._kwargs.get('filter', self.DEFAULT_FILTER))
+
+        component_args_as_str = eval(self._kwargs.get('query', self.DEFAULT_QUERY), {}, context)
+
+        self.logger.debug('Query Result = """%s"""' % component_args_as_str)
 
         argv = []
 
@@ -91,39 +164,11 @@ class Component(object):
 
         self.logger.debug('Running with argv = %s and context = %s' % (argv, repr(context)))
 
-        context = self.run(argv, context)
+        retval = self.run(argv, context)
 
-        if context:
+        self.logger.debug('Returning from __call__')
 
-            if isinstance(context, list):
-
-                for _context in context:
-
-                    # Update STACK
-
-                    _context.update({'STACK': _context.get('STACK', []) + [self.__class__.__name__]})
-
-            else:
-
-                # Don't iterate Generator, wrap it with another Generator
-
-                if isinstance(context, types.GeneratorType):
-
-                    # TODO: Add support for Generaor
-
-                    pass
-
-                else:
-
-                    context.update({'STACK': context.get('STACK', []) + [self.__class__.__name__]})
-
-        return context
-
-    # Application Binary Interface-like
-
-    def run(self, argv, context):
-
-        raise NotImplementedError
+        return retval
 
 
 class RootComponent(Component):
@@ -132,25 +177,19 @@ class RootComponent(Component):
 
         argv = list(self._args) or [arg]
 
-        self.logger.debug('Running with argv = %s and context = None' % argv)
+        context = Context(root_name=arg.__class__.__name__ + '_' + str(arg).encode('base64').strip(), root_value={'NAME': str(arg)})
 
-        context = self.run(argv, None)
+        self.logger.debug('New context = %s ; root = %s' % (repr(context), context._graph.graph['prefix'][:-1]))
 
-        if context:
+        self.logger.debug('In __call__ with %s' % pprint.pformat(repr(context)))
 
-            if isinstance(context, list):
+        self.logger.debug('Running with argv = %s and context = %s' % (argv, repr(context)))
 
-                for _context in context:
+        retval = self.run(argv, context)
 
-                     # Add 'ROOT' and 'STACK'
+        self.logger.debug('Returning from __call__ with %s' % pprint.pformat(retval))
 
-                    _context.update({'ROOT': _context.get('ROOT', argv[0]), 'STACK': [self.__class__.__name__] + _context.get('STACK', [])})
-
-            else:
-
-                context.update({'ROOT': context.get('ROOT', argv[0]), 'STACK': [self.__class__.__name__] + context.get('STACK', [])})
-
-        return context
+        return retval
 
 
 class InternalComponent(Component):
@@ -160,15 +199,21 @@ class InternalComponent(Component):
 
 class ExternalComponent(Component):
 
+    def __init__(self, *args, **kwargs):
+
+        Component.__init__(self, *args, **kwargs)
+
+        self.DEFAULT_STDIN_BUFFER = None
+
     def _execute(self, argv, context):
 
         raise NotImplementedError
 
-    def run(self, argv, context):
+    def main(self, argv, context):
 
         filename = self._kwargs.get('filename', self.DEFAULT_FILENAME)
 
-        self.logger.debug('FILENAME = ' + filename)
+        self.logger.debug('External Application Filename = ' + filename)
 
         path = miscellaneous.which(filename)[:1]
 
@@ -178,7 +223,7 @@ class ExternalComponent(Component):
 
             raise exceptions.HackershError(context, "%s: command not found" % self._kwargs.get('filename', self.DEFAULT_FILENAME))
 
-        self.logger.debug('PATH = ' + path[0])
+        self.logger.debug('External Application Path = ' + path[0])
 
         return self._processor(context, self._execute(path + argv, context))
 
@@ -193,7 +238,7 @@ class ExternalComponentReturnValueOutput(ExternalComponent):
 
         cmd = argv[0] + ' ' + self._kwargs.get('output_opts', self.DEFAULT_OUTPUT_OPTIONS) + " " + ' '.join(argv[1:])
 
-        self.logger.debug('CMD = ' + cmd)
+        self.logger.debug('Shell Command = ' + cmd)
 
         p = subprocess.Popen(miscellaneous.shell_split(cmd), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
@@ -218,7 +263,11 @@ class ExternalComponentStreamOutput(ExternalComponent):
 
             if isinstance(obj, types.ClassType) and issubclass(obj, OutputHandler):
 
+                self.logger.debug('Registering %s as Handler' % obj)
+
                 self._handlers.append(obj)
+
+        self.logger.debug('Handlers = %s' % self._handlers)
 
     def _execute(self, argv, context):
 
@@ -232,13 +281,13 @@ class ExternalComponentStreamOutput(ExternalComponent):
 
             cmd = argv[0] + ' ' + self._kwargs.get('output_opts', self.DEFAULT_OUTPUT_OPTIONS) + " " + tmpfile.name + " " + ' '.join(argv[1:])
 
-            self.logger.debug('CMD = ' + cmd)
+            self.logger.debug('Shell Command = ' + cmd)
 
             p = subprocess.Popen(miscellaneous.shell_split(cmd), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
             (stdout_output, stderr_output) = p.communicate(input=self._kwargs.get('stdin', self.DEFAULT_STDIN_BUFFER))
 
-            self.logger.debug(stdout_output)
+            self.logger.debug('Standard Output (%d bytes) =\n"""%s"""' % (len(stdout_output), stdout_output))
 
             tmpfile.flush()
 
@@ -250,7 +299,7 @@ class ExternalComponentStreamOutput(ExternalComponent):
 
             data = tmpfile.read()
 
-            self.logger.debug('DATA (%d bytes) = %s' % (len(data), data))
+            self.logger.debug('File Output (%d bytes) =\n"""%s"""' % (len(data), data))
 
         except Exception:
 
@@ -262,6 +311,8 @@ class ExternalComponentStreamOutput(ExternalComponent):
 
         if data:
 
+            self.logger.debug('Processing Data...')
+
             contexts = []
 
             # Do-while, try parse data with *every* possible Output Handler
@@ -269,6 +320,8 @@ class ExternalComponentStreamOutput(ExternalComponent):
             for handler in self._handlers:
 
                 handler_instance = handler(context, contexts)
+
+                self.logger.debug('Trying to Handle w/ %s' % handler_instance)
 
                 handler_instance.parse(data)
 
@@ -278,9 +331,15 @@ class ExternalComponentStreamOutput(ExternalComponent):
 
                 raise exceptions.HackershError(context, "%s: unable to parse: %s" % (self.__class__.__name__.lower(), str(data)))
 
+            if isinstance(contexts, list) and len(contexts) == 1:
+
+                contexts = contexts[0]
+
             return contexts
 
         else:
+
+            self.logger.debug('No Data to Process!')
 
             return data
 
@@ -299,13 +358,13 @@ class ExternalComponentFileOutput(ExternalComponentStreamOutput):
 
             cmd = argv[0] + ' ' + self._kwargs.get('output_opts', self.DEFAULT_OUTPUT_OPTIONS) + " " + tmpfile.name + " " + ' '.join(argv[1:])
 
-            self.logger.debug('CMD = ' + cmd)
+            self.logger.debug('Shell Command = ' + cmd)
 
             p = subprocess.Popen(miscellaneous.shell_split(cmd), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
             (stdout_output, stderr_output) = p.communicate(input=self._kwargs.get('stdin', self.DEFAULT_STDIN_BUFFER))
 
-            self.logger.debug(stdout_output)
+            self.logger.debug('Standard Output (%d bytes) =\n"""%s"""' % (len(stdout_output), stdout_output))
 
             tmpfile.flush()
 
@@ -317,9 +376,11 @@ class ExternalComponentFileOutput(ExternalComponentStreamOutput):
 
             data = tmpfile.read()
 
-            self.logger.debug('DATA (%d bytes) = %s' % (len(data), data))
+            self.logger.debug('File Output (%d bytes) =\n"""%s"""' % (len(data), data))
 
-        except Exception:
+        except Exception as e:
+
+            self.logger.exception(e)
 
             os.remove(fname)
 
@@ -332,13 +393,13 @@ class ExternalComponentStdoutOutput(ExternalComponentStreamOutput):
 
         cmd = argv[0] + ' ' + self._kwargs.get('output_opts', self.DEFAULT_OUTPUT_OPTIONS) + " " + ' '.join(argv[1:])
 
-        self.logger.debug('CMD = ' + cmd)
+        self.logger.debug('Shell Command = ' + cmd)
 
         p = subprocess.Popen(miscellaneous.shell_split(cmd), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         p_stdout = p.communicate(input=self._kwargs.get('stdin', self.DEFAULT_STDIN_BUFFER))[0]
 
-        self.logger.debug('DATA (%d bytes) = %s' % (len(p_stdout), p_stdout))
+        self.logger.debug('Standard Output (%d bytes) =\n"""%s"""' % (len(p_stdout), p_stdout))
 
         return p_stdout
 
@@ -449,146 +510,118 @@ class XMLOutputHandler(OutputHandler, xml.sax.handler.ContentHandler):
         xml.sax.parseString(data, self)
 
 
-class SessionContext(_ordereddict.OrderedDict):
+class Context(object):
 
-    def __getitem__(self, key):
+    def __init__(self, graph=None, root_name=None, root_value={}):
 
-        value = False
+        if graph is None:
 
-        try:
+            self._graph = pythonect.internal._graph.Graph()
 
-            # Case insensitive
+            if root_name is not None:
 
-            value = _ordereddict.OrderedDict.__getitem__(self, key.upper())
+                # New Graph
 
-        except KeyError:
+                self._graph.add_node(root_name, root_value)
 
-            pass
-
-        return value
-
-
-class RemoteSessionContext(SessionContext):
-
-    def __init__(self, *args, **kwargs):
-
-        SessionContext.__init__(self, *args, **kwargs)
-
-    def _tree_str(self):
-
-        # TCP / UDP ?
-
-        if self['PROTO'] == 'TCP' or self['PROTO'] == 'UDP':
-
-            return self['PORT'] + '/' + self['PROTO'].lower() + ' (' + self.get('SERVICE', '?') + ')'
+                self._graph.graph['prefix'] = root_name + '.'
 
         else:
 
-            return ''
+            # From `graph`
 
-    def __str__(self):
+            self._graph = graph
 
-        # Properties
+    def as_graph(self):
 
-        output = \
-            '\n' + conio.draw_underline('Properties:') + '\n' + \
-            conio.draw_dict_tbl(self, ["Property", "Value"], filter(lambda key: not key.startswith('_') and key != 'VULNERABILITIES', self.keys())) + '\n'
+        return self._graph
 
-        # Vulnerabilities
+    def __iter__(self):
 
-        if 'VULNERABILITIES' in self:
+        # So Pythonect won't iter()ate us ...
 
-            output = \
-                output + '\n' + \
-                conio.draw_underline('Vulnerabilities:') + '\n' + \
-                conio.draw_static_tbl(self['VULNERABILITIES'], ["VULNERABILITY DESCRIPTION", "URL"], ["DESCRIPTION", "DESTINATION"]) + '\n'
-
-        return output
-
-
-class LocalSessionContext(SessionContext):
-
-    pass
-
-
-class SessionsTree(object):
-
-    def __init__(self, children):
-
-        self.children = []
-
-        self.keys = _ordereddict.OrderedDict()
-
-        # N
-
-        if isinstance(children, list):
-
-            # Remove False's
-
-            self.children = filter(lambda x: not isinstance(x, bool), children)
-
-        # 1
-
-        elif not isinstance(children, bool):
-
-            self.children.append(children)
-
-        if self.children:
-
-            children_roots = list(set([child.values()[0] for child in self.children]))
-
-            # 1
-
-            if len(children_roots) == 1:
-
-                self.keys[children_roots[0]] = self
-
-            # N
-
-            else:
-
-                for children_root in children_roots:
-
-                    self.keys[children_root] = SessionsTree(filter(lambda child: child.values()[0] == children_root, self.children))
-
-    def _tree_str(self):
-
-        if self.keys:
-
-            if len(self.keys) == 1:
-
-                yield self.children[0].values()[0]
-
-                last = self.children[-1] if self.children else None
-
-                for child in self.children:
-
-                    prefix = '  `-' if child is last else '  +-'
-
-                    for line in child._tree_str().splitlines():
-
-                        yield '\n' + prefix + line
-
-                        prefix = '  ' if child is last else '  | '
-
-                yield '\n'
-
-            # N
-
-            else:
-
-                for key in self.keys.keys():
-
-                    yield self.keys[key]
-
-        else:
-
-            yield "Error\n"
-
-    def __str__(self):
-
-        return reduce(lambda x, y: str(x) + str(y), self._tree_str())
+        return None
 
     def __getitem__(self, key):
 
-        return self.keys.get(key, False)
+        return_value = False
+
+        for node in self._graph.nodes():
+
+            if key in self._graph.node[node]:
+
+                return_value = self._graph.node[node][key]
+
+        return return_value
+
+    def _copy(self):
+
+        return copy.deepcopy(self)
+
+    def push(self, key, value):
+
+        # Copy-on-Write
+
+        new_ctx = self._copy()
+
+        new_ctx._graph = new_ctx._graph.copy()
+
+        new_ctx._graph.add_node(new_ctx._graph.graph['prefix'] + key, value)
+
+        new_ctx._graph.add_edge(new_ctx._graph.nodes()[-2], new_ctx._graph.nodes()[-1])
+
+        new_ctx._graph.graph['prefix'] = new_ctx._graph.nodes()[-1] + '.'
+
+        return new_ctx
+
+    def pop(self):
+
+        self._graph.remove_node(self._graph.nodes()[-1])
+
+        # TODO: Adjust self.graph['prefix'] ?
+
+    def __add__(self, other):
+
+        if other:
+
+            return Context(networkx.compose(other._graph, self._graph))
+
+        else:
+
+            return self
+
+    def __div__(self, other):
+
+        return_value = Context()
+
+        filter_expression = other
+
+        # Generate all possible (read: simple) flows between every root_node and every terminal_node
+
+        for root_node in [node for node, degree in self._graph.in_degree().items() if degree == 0]:
+
+            for terminal_node in [node for node, degree in self._graph.out_degree().items() if degree == 0]:
+
+                for simple_path in networkx.all_simple_paths(self._graph, root_node, terminal_node):
+
+                    tmp_ctx = Context(pythonect.internal._graph.Graph(self._graph.subgraph(simple_path)))
+
+                    # Is generated Graph passes `filter_expression`? Add to result Graph.
+
+                    if eval(filter_expression, {}, tmp_ctx):
+
+                        return_value += tmp_ctx
+
+        # Graph of all possible root_node to terminal_node that passes `filter_expression`
+
+        return return_value
+
+    def __repr__(self):
+
+        if self._graph and self._graph.nodes():
+
+            return str(map(lambda x: self._graph.node[x], self._graph.nodes()))
+
+        else:
+
+            return object.__repr__(self)

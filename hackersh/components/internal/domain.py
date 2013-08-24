@@ -32,12 +32,12 @@ __version__ = "0.1.0"
 
 class Domain(hackersh.objects.RootComponent):
 
-    def run(self, argv, context):
+    def main(self, argv, context):
 
-        _context = False
+        _context = dict()
 
         if argv[0].find('.') != -1:
 
-            _context = hackersh.objects.RemoteSessionContext(DOMAIN=argv[0])
+            _context['DOMAIN'] = argv[0]
 
         return _context

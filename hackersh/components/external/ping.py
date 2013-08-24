@@ -31,17 +31,15 @@ __version__ = "0.1.1"
 
 class Ping(hackersh.objects.ExternalComponentReturnValueOutput):
 
-    def _processor(self, context, data):
+    def _processor(self, context, retval):
 
-        retval = False
+        _context = dict()
 
-        # i.e. Return Value == 0
+        if retval == 0:
 
-        if data == 0:
+            _context['PINGABLE']=True
 
-            retval = hackersh.objects.RemoteSessionContext(context, PINGABLE=True)
-
-        return retval
+        return _context
 
     # Consts
 
@@ -49,4 +47,4 @@ class Ping(hackersh.objects.ExternalComponentReturnValueOutput):
 
     DEFAULT_OUTPUT_OPTIONS = "-c 3"
 
-    DEFAULT_QUERY = DEFAULT_FILTER = "context['IPV4_ADDRESS'] or context['HOSTNAME']"
+    DEFAULT_QUERY = DEFAULT_FILTER = "IPV4_ADDRESS or HOSTNAME"

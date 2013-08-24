@@ -91,7 +91,7 @@ class Nmap(hackersh.objects.ExternalComponentFileOutput):
 
                     # Context per entry
 
-                    self._output.append(hackersh.objects.RemoteSessionContext(self._context, **entry))
+                    self._output.append(entry)
 
         def endDocument(self):
 
@@ -105,4 +105,4 @@ class Nmap(hackersh.objects.ExternalComponentFileOutput):
 
     DEFAULT_OUTPUT_OPTIONS = "-oX"
 
-    DEFAULT_QUERY = DEFAULT_FILTER = "context['IPV4_ADDRESS'] or context['HOSTNAME']"
+    DEFAULT_QUERY = DEFAULT_FILTER = "IPV4_ADDRESS or HOSTNAME"

@@ -61,7 +61,7 @@ class Amap(hackersh.objects.ExternalComponentFileOutput):
 
             for entry in self._entry_or_entries:
 
-                self._output.append(hackersh.objects.RemoteSessionContext(self._context, **entry))
+                self._output.append(entry)
 
             if not self._output:
 
@@ -78,7 +78,7 @@ class Amap(hackersh.objects.ExternalComponentFileOutput):
     DEFAULT_OUTPUT_OPTIONS = "-m -o"
 
     DEFAULT_FILTER = \
-        "(context['IPV4_ADDRESS'] or context['HOSTNAME']) and context['PROTO'] == 'TCP'"
+        "(IPV4_ADDRESS or HOSTNAME) and PROTO == 'TCP'"
 
     DEFAULT_QUERY = \
-        "(context['IPV4_ADDRESS'] or context['HOSTNAME']) + ' ' + context['PORT']"
+        "(IPV4_ADDRESS or HOSTNAME) + ' ' + PORT"

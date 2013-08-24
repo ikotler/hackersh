@@ -120,6 +120,6 @@ def eval(source, locals_):
 
             graph = source
 
-        return_value = pythonect.eval(_hackersh_graph_transform(graph, locals_), {}, locals_)
+        return_value = pythonect.eval(_hackersh_graph_transform(graph, locals_), locals_, {})
 
     return return_value

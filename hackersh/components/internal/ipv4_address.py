@@ -34,15 +34,15 @@ __version__ = "0.1.0"
 
 class IPv4_Address(hackersh.objects.RootComponent):
 
-    def run(self, argv, context):
+    def main(self, argv, context):
 
-        _context = False
+        _context = dict()
 
         try:
 
             socket.inet_aton(argv[0])
 
-            _context = hackersh.objects.RemoteSessionContext(IPV4_ADDRESS=argv[0])
+            _context['IPV4_ADDRESS'] = argv[0]
 
         except socket.error, e:
 

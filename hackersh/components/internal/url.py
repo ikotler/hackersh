@@ -36,9 +36,9 @@ __version__ = "0.1.0"
 
 class URL(hackersh.objects.RootComponent):
 
-    def run(self, argv, context):
+    def main(self, argv, context):
 
-        _context = hackersh.objects.RemoteSessionContext({'URL': argv[0]})
+        _context = dict(URL=argv[0])
 
         parse_result = urlparse.urlparse(argv[0])
 
@@ -60,11 +60,11 @@ class URL(hackersh.objects.RootComponent):
 
             # i.e. http://locahost or http://127.0.0.1?
 
-            __context = hackersh.components.internal.ipv4_address.IPv4_Address().run([netloc], {})
+            __context = hackersh.components.internal.ipv4_address.IPv4_Address().main([netloc], {})
 
             if not __context:
 
-                __context = hackersh.components.internal.hostname.Hostname().run([netloc], {})
+                __context = hackersh.components.internal.hostname.Hostname().main([netloc], {})
 
                 if not __context:
 

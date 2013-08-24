@@ -45,4 +45,4 @@ class DnsDict6(hackersh.objects.ExternalComponentStdoutOutput):
 
     DEFAULT_OUTPUT_OPTIONS = ''
 
-    DEFAULT_QUERY = DEFAULT_FILTER = "context['DOMAIN']"
+    DEFAULT_QUERY = DEFAULT_FILTER = "DOMAIN"

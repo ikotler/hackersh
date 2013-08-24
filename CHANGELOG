@@ -2,12 +2,31 @@
 
 HEAD
 
-o Add command line '--quiet/-q' to supress normal Hackersh welcome
+o Change DEAFULT_QUERY and DEFAULT_FILTER to support the new Graph Search
+  Language. Example:
+    'context['PROTO'] == "TCP" and context['PORT'] == "80"'
+  Changed to:
+    'PROTO == "TCP" and PORT == "80"'
 
-o Update to work with Pythonect 0.6.0 and NetworkX >= 1.7
+o Context can be searched via '/' (read: div) operator
+  Example:
+    "127.0.0.1" -> ipv4_address -> nmap
+  Then:
+    _/"PORT == '80'" -> nikto
+  Or:
+    _/"PROTO == 'TCP'"/"PORT == '21'" -> ...
+  And etc.
 
-o Refactor Hackersh Interpreter, new eval.py file with eval() and parse() functions
+o Component Entry Point is changed from run() to main(). Use run() for
+  external inovcation (i.e. from The Shell, or Python Code) and main() for
+  internal inovcation (i.e. from another Component). The run() method will
+  call the main() method, but will perform init tasks before doing so.
 
+o Context is now a Directed Graph
+
+o Remove RemoteSessionContext, there's only one Context Object: class Context
+
+o Delete _ordereddict.py
 
 Hackersh 0.2 [2013-05-02]
 
@@ -26,7 +45,7 @@ o Implement NbtScanStdoutOutputHandler class. Rewrite nbtscan to use it
 
 o Implement SqlMapStdoutOutputHandler class. Rewrite sqlmap to use it
 
-o Implement StdoutOutputHandler - a new Pseudo SAX Content Handler base 
+o Implement StdoutOutputHandler - a new Pseudo SAX Content Handler base
   class for stdout processing
 
 o Implement ExternalComponentStreamOutput - a new base class for generic

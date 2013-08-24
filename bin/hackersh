@@ -41,6 +41,7 @@ except ImportError:
 
 import hackersh
 import hackersh.components
+import hackersh.components.system.print_
 import hackersh.conio
 import hackersh.log
 
@@ -108,13 +109,21 @@ class HackershInteractiveConsole(code.InteractiveConsole):
 
             return_value = hackersh.eval(code_, self.locals)
 
-            print return_value
+            # Empty List is not False, but Empty list is not True either
 
-            if return_value is not False:
+            if return_value is not False and return_value:
 
-                # Reset locals to None
+                # Not an empty list? Reduce!
+
+                if isinstance(return_value, list):
+
+                    return_value = reduce(lambda x, y: x+y if isinstance(x, hackersh.objects.Context) else y+x, return_value)
 
                 self.locals['_'] = return_value
+
+                self.locals['__IN_EVAL__'] = True
+
+                hackersh.components.system.print_.print_().main([return_value], {})
 
         except SystemExit:
 
@@ -166,8 +175,6 @@ def main():
     if args.verbose:
 
         hackersh.log.logger.setLevel(hackersh.log.logging.ERROR - ((args.verbose % 4) * 10))
-
-    hackersh.log.logger.info('Started Hackersh with args = %s' % args)
 
     # Add current working directory to sys.path
 

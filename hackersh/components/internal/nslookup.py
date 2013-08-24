@@ -35,9 +35,9 @@ __version__ = "0.1.0"
 
 class Nslookup(hackersh.objects.RootComponent):
 
-    def run(self, argv, context):
+    def main(self, argv, context):
 
-        _context = False
+        _context = dict()
 
         try:
 
@@ -45,23 +45,13 @@ class Nslookup(hackersh.objects.RootComponent):
 
             if isinstance(argv[0], basestring):
 
-                _context = hackersh.components.internal.ipv4_address.IPv4_Address().run([socket.gethostbyname(argv[0])], {})
+                _context = hackersh.components.internal.ipv4_address.IPv4_Address().main([socket.gethostbyname(argv[0])], {})
 
             # i.e. RemoteSessionContext(HOSTNAME='localhost', ...)
 
             else:
 
-                __context = hackersh.objects.RemoteSessionContext(argv[0])
-
-                _context = hackersh.components.internal.ipv4_address.IPv4_Address().run([socket.gethostbyname(__context['HOSTNAME'])], {})
-
-                _context.update(__context)
-
-                # Turn HOSTNAME into a shadowed key
-
-                __context['_HOSTNAME'] = __context['HOSTNAME']
-
-                del __context['HOSTNAME']
+                _context = hackersh.components.internal.ipv4_address.IPv4_Address().main([socket.gethostbyname(context['HOSTNAME'])], {})
 
         except socket.error as e:
 

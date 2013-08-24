@@ -19,6 +19,8 @@
 # Local imports
 
 import hackersh.objects
+import hackersh.components.internal.url
+import mechanize
 
 
 # Metadata
@@ -31,16 +33,16 @@ __version__ = "0.1.0"
 
 class Iterate_Links(hackersh.objects.InternalComponent):
 
-    def run(self, argv, context):
+    def main(self, argv, context):
 
-        contexts = []
+        contexts = ['a', 'b', 'c']
 
-        br = argv[0]
+        # br = argv[0]
 
-        for link in br.links():
+        # for link in br.links():
 
-            contexts.append(hackersh.objects.RemoteSessionContext(context, URL=link.absolute_url))
+        #     contexts.append(hackersh.components.internal.url.URL().main([link.absolute_url], {}))
 
-        return contexts if contexts else False
+        return contexts
 
-    DEFAULT_FILTER = DEFAULT_QUERY = "context['BR_OBJECT']"
+    DEFAULT_FILTER = DEFAULT_QUERY = "BR_OBJECT"
