@@ -21,7 +21,7 @@ import netaddr
 
 # Local imports
 
-import hackersh.objects
+import hackersh.components
 
 
 # Metadata
@@ -32,7 +32,7 @@ __version__ = "0.1.0"
 
 # Implementation
 
-class IPv4_Range(hackersh.objects.RootComponent):
+class IPv4_Range(hackersh.components.RootComponent):
 
     def main(self, argv, context):
 

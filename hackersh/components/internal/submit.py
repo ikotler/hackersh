@@ -18,7 +18,7 @@
 
 # Local imports
 
-import hackersh.objects
+import hackersh.components.internal
 
 
 # Metadata
@@ -29,7 +29,7 @@ __version__ = "0.1.0"
 
 # Implementation
 
-class Submit(hackersh.objects.InternalComponent):
+class Submit(hackersh.components.internal.InternalComponent):
 
     def main(self, argv, context):
 

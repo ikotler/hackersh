@@ -18,7 +18,8 @@
 
 # Local imports
 
-import hackersh.objects
+import hackersh.components.external
+import hackersh.components.parsers
 
 
 # Metadata
@@ -29,11 +30,11 @@ __version__ = "0.1.1"
 
 # Implementation
 
-class Nikto(hackersh.objects.ExternalComponentFileOutput):
+class Nikto(hackersh.components.external.ExternalComponentFileOutput):
 
     # XML Parser(s)
 
-    class NiktoXMLOutputHandler(hackersh.objects.XMLOutputHandler):
+    class NiktoXMLOutputHandler(hackersh.components.parsers.XMLOutputHandler):
 
         def startDocument(self):
 

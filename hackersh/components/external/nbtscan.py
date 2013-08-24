@@ -21,7 +21,8 @@ import csv
 
 # Local imports
 
-import hackersh.objects
+import hackersh.components.external
+import hackersh.components.parsers
 
 
 # Metadata
@@ -32,9 +33,9 @@ __version__ = "0.1.1"
 
 # Implementation
 
-class NbtScan(hackersh.objects.ExternalComponentStdoutOutput):
+class NbtScan(hackersh.components.external.ExternalComponentStdoutOutput):
 
-    class NbtScanStdoutOutputHandler(hackersh.objects.StdoutOutputHandler):
+    class NbtScanStdoutOutputHandler(hackersh.components.parsers.StdoutOutputHandler):
 
         def startDocument(self):
 

@@ -18,7 +18,8 @@
 
 # Local imports
 
-import hackersh.objects
+import hackersh.components.external
+import hackersh.components.parsers
 
 
 # Metadata
@@ -29,9 +30,9 @@ __version__ = "0.1.1"
 
 # Implementation
 
-class Amap(hackersh.objects.ExternalComponentFileOutput):
+class Amap(hackersh.components.external.ExternalComponentFileOutput):
 
-    class AmapCSVOutputHandler(hackersh.objects.CSVOutputHandler):
+    class AmapCSVOutputHandler(hackersh.components.parsers.CSVOutputHandler):
 
         def startDocument(self):
 

@@ -21,7 +21,7 @@ import socket
 
 # Local imports
 
-import hackersh.objects
+import hackersh.components
 
 
 # Metadata
@@ -32,7 +32,7 @@ __version__ = "0.1.0"
 
 # Implementation
 
-class Hostname(hackersh.objects.RootComponent):
+class Hostname(hackersh.components.RootComponent):
 
     def main(self, argv, context):
 

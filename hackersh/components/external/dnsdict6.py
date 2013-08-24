@@ -18,7 +18,8 @@
 
 # Local imports
 
-import hackersh.objects
+import hackersh.components.external
+import hackersh.components.parsers
 
 
 # Metadata
@@ -29,13 +30,13 @@ __version__ = "0.1.0"
 
 # Implementation
 
-class DnsDict6(hackersh.objects.ExternalComponentStdoutOutput):
+class DnsDict6(hackersh.components.external.ExternalComponentStdoutOutput):
 
-    class DnsDict6IPv4Output(hackersh.objects.SimpleRegExHandler):
+    class DnsDict6IPv4Output(hackersh.components.parsers.SimpleRegExHandler):
 
         PATTERN = "(?P<HOSTNAME>.*)\s+->\s+(?P<IPV4_ADDRESS>.*)"
 
-    class DnsDict6IPv6Output(hackersh.objects.SimpleRegExHandler):
+    class DnsDict6IPv6Output(hackersh.components.parsers.SimpleRegExHandler):
 
         PATTERN = "(?P<HOSTNAME>.*)\s+=>\s+(?P<IPV6_ADDRESS>.*)"
 

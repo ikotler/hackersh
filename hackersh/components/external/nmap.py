@@ -18,7 +18,8 @@
 
 # Local imports
 
-import hackersh.objects
+import hackersh.components.external
+import hackersh.components.parsers
 
 
 # Metadata
@@ -29,11 +30,11 @@ __version__ = "0.1.1"
 
 # Implementation
 
-class Nmap(hackersh.objects.ExternalComponentFileOutput):
+class Nmap(hackersh.components.external.ExternalComponentFileOutput):
 
     # XML Parser(s)
 
-    class NmapXMLOutputHandler(hackersh.objects.XMLOutputHandler):
+    class NmapXMLOutputHandler(hackersh.components.parsers.XMLOutputHandler):
 
         def startElement(self, name, attrs):
 

@@ -21,7 +21,7 @@ import urlparse
 
 # Local imports
 
-import hackersh.objects
+import hackersh.components
 import hackersh.components.internal.ipv4_address
 import hackersh.components.internal.hostname
 
@@ -34,7 +34,7 @@ __version__ = "0.1.0"
 
 # Implementation
 
-class URL(hackersh.objects.RootComponent):
+class URL(hackersh.components.RootComponent):
 
     def main(self, argv, context):
 

@@ -21,7 +21,7 @@ import socket
 
 # Local imports
 
-import hackersh.objects
+import hackersh.components
 import hackersh.components.internal.ipv4_address
 
 
@@ -33,7 +33,7 @@ __version__ = "0.1.0"
 
 # Implementation
 
-class Nslookup(hackersh.objects.RootComponent):
+class Nslookup(hackersh.components.RootComponent):
 
     def main(self, argv, context):
 

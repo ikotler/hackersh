@@ -18,7 +18,8 @@
 
 # Local imports
 
-import hackersh.objects
+import hackersh.components.external
+import hackersh.components.parsers
 
 
 # Metadata
@@ -29,7 +30,7 @@ __version__ = "0.1.2"
 
 # Implementation
 
-class SqlMap(hackersh.objects.ExternalComponentStdoutOutput):
+class SqlMap(hackersh.components.external.ExternalComponentStdoutOutput):
 
     # ---
     # Place: GET
@@ -47,7 +48,7 @@ class SqlMap(hackersh.objects.ExternalComponentStdoutOutput):
     #     Payload: id=vGep' AND 7534=BENCHMARK(5000000,MD5(0x6d704e4c)) AND 'eALp'='eALp&Submit=Submit
     # ---
 
-    class SqlMapStdoutOutputHandler(hackersh.objects.StdoutOutputHandler):
+    class SqlMapStdoutOutputHandler(hackersh.components.parsers.StdoutOutputHandler):
 
         def startDocument(self):
 

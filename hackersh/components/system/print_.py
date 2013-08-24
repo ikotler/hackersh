@@ -21,7 +21,7 @@ import sys
 
 # Local imports
 
-import hackersh.objects
+import hackersh.components
 import hackersh.conio
 
 
@@ -33,13 +33,13 @@ __version__ = "0.1.0"
 
 # Implementation
 
-class print_(hackersh.objects.Component):
+class print_(hackersh.components.Component):
 
     def main(self, argv, context):
 
         buf = ""
 
-        if isinstance(argv[0], hackersh.objects.Context):
+        if isinstance(argv[0], hackersh.components.Context):
 
             for root_node in [node for node, degree in argv[0].as_graph().in_degree().items() if degree == 0]:
 

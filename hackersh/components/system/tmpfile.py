@@ -21,7 +21,7 @@ import tempfile
 
 # Local imports
 
-import hackersh.objects
+import hackersh.components
 
 
 # Metadata
@@ -32,7 +32,7 @@ __version__ = "0.1.0"
 
 # Implementation
 
-class tmpfile(hackersh.objects.Component):
+class tmpfile(hackersh.components.Component):
 
     def __call__(self, arg):
 

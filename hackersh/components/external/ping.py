@@ -18,7 +18,7 @@
 
 # Local imports
 
-import hackersh.objects
+import hackersh.components.external
 
 
 # Metadata
@@ -29,7 +29,7 @@ __version__ = "0.1.1"
 
 # Implementation
 
-class Ping(hackersh.objects.ExternalComponentReturnValueOutput):
+class Ping(hackersh.components.external.ExternalComponentReturnValueOutput):
 
     def _processor(self, context, retval):
 

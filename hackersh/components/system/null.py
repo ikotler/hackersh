@@ -18,7 +18,7 @@
 
 # Local imports
 
-import hackersh.objects
+import hackersh.components
 
 
 # Metadata
@@ -29,7 +29,7 @@ __version__ = "0.1.0"
 
 # Implementation
 
-class Null(hackersh.objects.Component):
+class Null(hackersh.components.Component):
 
     def __call__(self, arg):
 

@@ -18,9 +18,8 @@
 
 # Local imports
 
-import hackersh.objects
+import hackersh.components.internal
 import hackersh.components.internal.url
-import mechanize
 
 
 # Metadata
@@ -31,17 +30,17 @@ __version__ = "0.1.0"
 
 # Implementation
 
-class Iterate_Links(hackersh.objects.InternalComponent):
+class Iterate_Links(hackersh.components.internal.InternalComponent):
 
     def main(self, argv, context):
 
-        contexts = ['a', 'b', 'c']
+        contexts = []
 
-        # br = argv[0]
+        br = argv[0]
 
-        # for link in br.links():
+        for link in br.links():
 
-        #     contexts.append(hackersh.components.internal.url.URL().main([link.absolute_url], {}))
+            contexts.append(hackersh.components.internal.url.URL().main([link.absolute_url], {}))
 
         return contexts
 

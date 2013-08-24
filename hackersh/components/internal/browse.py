@@ -24,7 +24,7 @@ import os
 
 # Local imports
 
-import hackersh.objects
+import hackersh.components.internal
 
 
 # Metadata
@@ -48,7 +48,7 @@ class _MozillaCookieJarAsCommandLineArgument(cookielib.MozillaCookieJar):
         return '"' + cookies_arg + '"'
 
 
-class Browse(hackersh.objects.InternalComponent):
+class Browse(hackersh.components.internal.InternalComponent):
 
     def main(self, argv, context):
 

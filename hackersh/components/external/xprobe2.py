@@ -18,7 +18,8 @@
 
 # Local imports
 
-import hackersh.objects
+import hackersh.components.external
+import hackersh.components.parsers
 
 
 # Metadata
@@ -29,11 +30,11 @@ __version__ = "0.1.1"
 
 # Implementation
 
-class Xprobe2(hackersh.objects.ExternalComponentFileOutput):
+class Xprobe2(hackersh.components.external.ExternalComponentFileOutput):
 
     # XML Parser(s)
 
-    class Xprobe2XMLOutputHandler(hackersh.objects.XMLOutputHandler):
+    class Xprobe2XMLOutputHandler(hackersh.components.parsers.XMLOutputHandler):
 
         def startDocument(self):
 

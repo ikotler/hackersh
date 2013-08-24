@@ -22,7 +22,7 @@ import shlex
 
 # Local imports
 
-import hackersh.objects
+import hackersh.components
 
 
 # Metadata
@@ -33,7 +33,7 @@ __version__ = "0.1.0"
 
 # Implementation
 
-class System(hackersh.objects.Component):
+class System(hackersh.components.Component):
 
     def __call__(self, arg):
 

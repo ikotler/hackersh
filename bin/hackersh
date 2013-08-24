@@ -117,7 +117,7 @@ class HackershInteractiveConsole(code.InteractiveConsole):
 
                 if isinstance(return_value, list):
 
-                    return_value = reduce(lambda x, y: x+y if isinstance(x, hackersh.objects.Context) else y+x, return_value)
+                    return_value = reduce(lambda x, y: x+y if isinstance(x, hackersh.components.Context) else y+x, return_value)
 
                 self.locals['_'] = return_value
 

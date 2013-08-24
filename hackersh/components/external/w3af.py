@@ -20,12 +20,12 @@ import tempfile
 import os
 import subprocess
 import shlex
-import select
 
 
 # Local imports
 
-import hackersh.objects
+import hackersh.components.external
+import hackersh.components.parsers
 
 
 # Metadata
@@ -36,9 +36,9 @@ __version__ = "0.1.1"
 
 # Implementation
 
-class W3af(hackersh.objects.ExternalComponentFileOutput):
+class W3af(hackersh.components.external.ExternalComponentFileOutput):
 
-    class W3afHTMLOutputHandler(hackersh.objects.HTMLOutputHandler):
+    class W3afHTMLOutputHandler(hackersh.components.parsers.HTMLOutputHandler):
 
         def startDocument(self):
 
@@ -106,7 +106,7 @@ class W3af(hackersh.objects.ExternalComponentFileOutput):
 
             self._output.append({'VULNERABILITIES': self._vulnerabilities})
 
-#    class W3afCSVOutputHandler(hackersh.objects.CSVOutputHandler):
+#    class W3afCSVOutputHandler(hackersh.components.parsers.CSVOutputHandler):
 #
 #        def startDocument(self):
 #
