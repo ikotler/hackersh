@@ -2,6 +2,9 @@
 
 HEAD
 
+o Support realtime STDOUT and STDERR output via debug=True (e.g. "127.0.0.1"
+-> ipv4_address -> nmap(debug=True))
+
 o Support Shell-style Arg Passing (i.e. "127.0.01" -> ipv4_address -> nmap
 -p22)
 

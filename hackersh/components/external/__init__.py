@@ -20,12 +20,76 @@ import os
 import tempfile
 import subprocess
 import types
+import errno
+import select
+
 
 # Local imports
 
 import hackersh.components
 import hackersh.miscellaneous
 import hackersh.exceptions
+
+
+#############
+# Functions #
+#############
+
+def _async_communicate(p, stdin=None, logger=None):
+
+    stdout = []
+    stderr = []
+
+    if p.stdin and stdin:
+        try:
+
+            p.stdin.write(input)
+
+        except IOError as e:
+
+            if e.errno != errno.EPIPE and e.errno != errno.EINVAL:
+                raise
+
+        p.stdin.close()
+
+    while True:
+
+        reads = [p.stdout.fileno(), p.stderr.fileno()]
+
+        ret = select.select(reads, [], [])
+
+        for fd in ret[0]:
+
+            if fd == p.stdout.fileno():
+
+                read = p.stdout.readline()
+
+                if logger:
+                    logger.debug('[STDOUT]: ' + read.strip())
+
+                stdout.append(read)
+
+            if fd == p.stderr.fileno():
+
+                read = p.stderr.readline()
+
+                if logger:
+                    logger.debug('[STDERR]: ' + read.strip())
+
+                stderr.append(read)
+
+        if p.poll() != None:
+            break
+
+    stdout_stream = ''.join(stdout)
+    stderr_stream = ''.join(stderr)
+
+    if logger:
+        logger.debug('Wrote %d bytes to STDIN' % len(stdin) if stdin else "No STDIN")
+        logger.debug('Read %d bytes (%d lines) from STDOUT' % (len(stdout_stream), len(stdout)))
+        logger.debug('Read %d bytes (%d lines) from STDERR' % (len(stderr_stream), len(stderr)))
+
+    return (stdout_stream, stderr_stream)
 
 
 ###########
@@ -120,9 +184,7 @@ class ExternalComponentStreamOutput(ExternalComponent):
 
             p = subprocess.Popen(hackersh.miscellaneous.shell_split(cmd), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-            (stdout_output, stderr_output) = p.communicate(input=self._kwargs.get('stdin', self.DEFAULT_STDIN_BUFFER))
-
-            self.logger.debug('Standard Output (%d bytes) =\n"""%s"""' % (len(stdout_output), stdout_output))
+            (stdout_output, stderr_output) = _async_communicate(p, self._kwargs.get('stdin', self.DEFAULT_STDIN_BUFFER), self.logger)
 
             tmpfile.flush()
 
@@ -197,9 +259,7 @@ class ExternalComponentFileOutput(ExternalComponentStreamOutput):
 
             p = subprocess.Popen(hackersh.miscellaneous.shell_split(cmd), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-            (stdout_output, stderr_output) = p.communicate(input=self._kwargs.get('stdin', self.DEFAULT_STDIN_BUFFER))
-
-            self.logger.debug('Standard Output (%d bytes) =\n"""%s"""' % (len(stdout_output), stdout_output))
+            (stdout_output, stderr_output) = _async_communicate(p, self._kwargs.get('stdin', self.DEFAULT_STDIN_BUFFER), self.logger)
 
             tmpfile.flush()
 
@@ -232,9 +292,6 @@ class ExternalComponentStdoutOutput(ExternalComponentStreamOutput):
 
         p = subprocess.Popen(hackersh.miscellaneous.shell_split(cmd), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-        p_stdout = p.communicate(input=self._kwargs.get('stdin', self.DEFAULT_STDIN_BUFFER))[0]
+        (stdout_output, stderr_output) = _async_communicate(p, self._kwargs.get('stdin', self.DEFAULT_STDIN_BUFFER), self.logger)
 
-        self.logger.debug('Standard Output (%d bytes) =\n"""%s"""' % (len(p_stdout), p_stdout))
-
-        return p_stdout
-
+        return stdout_output
