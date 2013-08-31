@@ -43,45 +43,35 @@ def __hackersh_preprocessor(source, sym_tbl):
 
     orig_source = source
 
-    # i.e. nmap
+    if source.startswith('"""$'):
 
-    if source in sym_tbl and not isinstance(sym_tbl[source], types.FunctionType):
+        # """$Hello World$"""' => 'Hello World'
 
-        source = "%s()" % source
+        source = source[4:-4]
+
+    tokens = shlex.split(source)
+
+    # e.g. nmap
+
+    if tokens[0] in sym_tbl and not isinstance(sym_tbl[tokens[0]], types.FunctionType):
+
+        # i.e. nmap -sS -P0
+
+        if len(tokens) > 1:
+
+            source = "%s('%s')" % (tokens[0], ' '.join(tokens[1:]))
+
+        # i.e. nmap
+
+        else:
+
+            source = "%s()" % source
 
     # i.e. /usr/bin/nmap or ./nmap
 
-    if source.startswith('/') or source.startswith('./') or source.startswith('../'):
+    elif tokens[0].startswith('/') or tokens[0].startswith('./') or tokens[0].startswith('../'):
 
-        expression_cmd = shlex.split(source)
-
-        external_component_path = os.path.abspath(expression_cmd[0])
-
-        external_component_name = os.path.splitext(os.path.basename(external_component_path))[0]
-
-        external_component_kwargs = '**{}'
-
-        # External binary? (i.e. /bin/ls)
-
-        if external_component_name not in sym_tbl:
-
-            if not os.path.isfile(external_component_path):
-
-                external_component_path = miscellaneous.which(expression_cmd[0])[0]
-
-                if not external_component_path:
-
-                    print '%s: command not found' % expression_cmd[0]
-
-                    return False
-
-            external_component_kwargs = "**{'path':'%s'}" % external_component_path
-
-            external_component_name = "system"
-
-            external_component_args = "*(%s)" % ','.join(__quotes_wrap(expression_cmd[1:]) + [' '])
-
-        source = "%s(%s, %s)" % (external_component_name, external_component_args, external_component_kwargs)
+        source = 'system(""" ' + source + ' """)'
 
     # print '%s => %s' % (orig_source, source)
 
@@ -99,9 +89,55 @@ def _hackersh_graph_transform(graph, hackersh_locals):
     return graph
 
 
+def __command_preprocessor(command):
+
+    new_command = command = command.strip()
+
+    if not command.startswith('[') and not command.endswith(']'):
+
+        new_command = '"""$' + command + '$"""'
+
+    return new_command
+
+
 def parse(source):
 
-    return pythonect.parse(source)
+    command_buffer = ""
+    depth = 0
+
+    tokens = miscellaneous.shell_split(source.encode('utf8'))
+
+    new_source = ""
+
+    ###############
+    # Mini Parser #
+    ###############
+
+    for t in tokens:
+
+        # 'Hello, world' -> print -> ...
+
+        if t in ['|', '->'] and depth == 0:
+
+            new_source += __command_preprocessor(command_buffer.strip()) + ' ' + t + ' '
+
+            command_buffer = ""
+
+        else:
+
+            command_buffer += ' ' + t
+
+            if t.startswith('[') or t.startswith('('):
+
+                depth += 1
+
+            if t.endswith(']') or t.endswith(']'):
+
+                depth -= 1
+
+    new_source += __command_preprocessor(command_buffer.strip())
+
+    return pythonect.parse(new_source.strip())
 
 
 def eval(source, locals_):

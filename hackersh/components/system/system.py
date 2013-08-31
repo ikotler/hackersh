@@ -37,12 +37,31 @@ class System(hackersh.components.Component):
 
     def __call__(self, arg):
 
-        cmd = shlex.split(self._kwargs['path']) + list(self._args)
+        if self._args[0]:
 
-        self.logger.debug('Executing shell command %s' % ' '.join(cmd))
+            # Command at __init__ and arg as stdin
 
-        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.STDOUT)
+            command = self._args[0]
 
-        (stdout_output, stderr_output) = p.communicate(arg)
+            if isinstance(arg, basestring):
+
+                stdin_buffer = arg
+
+            else:
+
+                stdin_buffer = ''
+
+        else:
+
+            # Command as arg, no stdin
+
+            command = arg
+            stdin_buffer = ''
+
+        self.logger.debug('Executing Shell Command: %s' % arg)
+
+        p = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.STDOUT)
+
+        (stdout_output, stderr_output) = p.communicate(stdin_buffer)
 
         return str(stdout_output)

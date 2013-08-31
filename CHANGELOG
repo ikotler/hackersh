@@ -2,6 +2,13 @@
 
 HEAD
 
+o Support Shell-style Arg Passing (i.e. "127.0.01" -> ipv4_address -> nmap
+-p22)
+
+o Support "Smooth" Shell Pipeline Experience (i.e. /bin/cat /etc/hosts |
+/usr/bin/grep "127.0.0.1" | /usr/bin/awk '{ print $1 }' | /usr/bin/tr -d '\n'
+| ipv4_address | mmap)
+
 o Change DEAFULT_QUERY and DEFAULT_FILTER to support the new Graph Search
   Language. Example:
     'context['PROTO'] == "TCP" and context['PORT'] == "80"'
