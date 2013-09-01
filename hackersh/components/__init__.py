@@ -187,37 +187,71 @@ class Component(object):
 
         self.logger.debug('In __call__ with %s' % pprint.pformat(repr(context)))
 
-        if not eval(self._kwargs.get('filter', self.DEFAULT_FILTER), {}, context):
+        filter_exp = self._kwargs.get('filter', self.DEFAULT_FILTER)
 
-                self.logger.debug('Filter """%s""" is False' % self._kwargs.get('filter', self.DEFAULT_FILTER))
+        ##########
+        # Filter #
+        ##########
 
-                return False
+        if filter_exp is not True:
 
-                # raise exceptions.HackershError(context, "%s: not enough data to start" % self.__class__.__name__.lower())
+            eval_res = eval(filter_exp, {}, context)
 
-        self.logger.debug('Filter """%s""" is True' % self._kwargs.get('filter', self.DEFAULT_FILTER))
+            self.logger.debug('eval("%s") Result is """%s""""' % (filter_exp, str(eval_res)))
 
-        component_args_as_str = eval(self._kwargs.get('query', self.DEFAULT_QUERY), {}, context)
+            if not eval_res:
 
-        self.logger.debug('Query Result = """%s"""' % component_args_as_str)
+                    self.logger.debug('Filter """%s""" is False' % filter_exp)
+
+                    return False
+
+                    # raise exceptions.HackershError(context, "%s: not enough data to start" % self.__class__.__name__.lower())
+
+            self.logger.debug('Filter """%s""" is True' % filter_exp)
+
+        else:
+
+            self.logger.debug('Filter """%s""" is True' % filter_exp)
+
+        #########
+        # Query #
+        #########
 
         argv = []
 
-        try:
-
-            argv = hackersh.miscellaneous.shell_split(self._args[0] + ' ' + component_args_as_str)
-
-        except IndexError:
+        if self._kwargs.get('query', self.DEFAULT_QUERY) is None:
 
             try:
 
-                argv = hackersh.miscellaneous.shell_split(component_args_as_str)
+                argv = self._args
 
-            except Exception:
+            except IndexError:
 
-                # "AS IT IS"
+                # Empty (i.e. [])
 
-                argv = [component_args_as_str]
+                pass
+
+        else:
+
+            component_args_as_str = eval(self._kwargs.get('query', self.DEFAULT_QUERY), {}, context)
+
+            self.logger.debug('Query Result = """%s"""' % component_args_as_str)
+
+            try:
+
+                argv = hackersh.miscellaneous.shell_split(self._args[0] + ' ' + component_args_as_str)
+
+            except IndexError:
+
+                try:
+
+                    argv = hackersh.miscellaneous.shell_split(component_args_as_str)
+
+                except Exception:
+
+                    # "AS IT IS"
+
+                    argv = [component_args_as_str]
 
         self.logger.debug('Running with argv = %s and context = %s' % (argv, repr(context)))
 
@@ -237,7 +271,7 @@ class Component(object):
 
     # Consts
 
-    DEFAULT_QUERY = ''
+    DEFAULT_QUERY = None
 
     DEFAULT_FILTER = True
 
