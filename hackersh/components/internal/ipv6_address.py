@@ -36,20 +36,6 @@ class IPv6_Address(hackersh.components.RootComponent):
 
     def main(self, argv, context):
 
-        _context = dict()
+        socket.inet_pton(socket.AF_INET6, argv[0])
 
-        try:
-
-            socket.inet_pton(socket.AF_INET6, argv[0])
-
-            _context['IPV6_ADDRESS'] = argv[0]
-
-        except socket.error, e:
-
-            self.logger.debug('Caught exception %s' % str(e))
-
-            # i.e. illegal IP address string passed to inet_aton
-
-            pass
-
-        return _context
+        return dict(IPV6_ADDRESS=argv[0])

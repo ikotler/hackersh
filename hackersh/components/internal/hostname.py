@@ -36,20 +36,6 @@ class Hostname(hackersh.components.RootComponent):
 
     def main(self, argv, context):
 
-        _context = dict()
+        socket.gethostbyname(argv[0])
 
-        try:
-
-            socket.gethostbyname(argv[0])
-
-            _context['HOSTNAME'] = argv[0]
-
-        except socket.error as e:
-
-            # i.e. socket.gaierror: [Errno -2] Name or service not known
-
-            self.logger.debug('Caught exception %s' % str(e))
-
-            pass
-
-        return _context
+        return dict(HOSTNAME=argv[0])

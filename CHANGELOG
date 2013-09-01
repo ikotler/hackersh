@@ -2,6 +2,9 @@
 
 HEAD
 
+o Automatically Handle (i.e. return False) and Log Exceptions from Components.
+  To see the a given Component Exceptions use debug=True
+
 o Support realtime STDOUT and STDERR output via debug=True (e.g. "127.0.0.1"
 -> ipv4_address -> nmap(debug=True))
 

@@ -221,7 +221,15 @@ class Component(object):
 
         self.logger.debug('Running with argv = %s and context = %s' % (argv, repr(context)))
 
-        retval = self.run(argv, context)
+        try:
+
+            retval = self.run(argv, context)
+
+        except Exception:
+
+            self.logger.exception('Exception from Component!')
+
+            retval = False
 
         self.logger.debug('Returning from __call__')
 
@@ -242,7 +250,15 @@ class RootComponent(Component):
 
         self.logger.debug('Running with argv = %s and context = %s' % (argv, repr(context)))
 
-        retval = self.run(argv, context)
+        try:
+
+            retval = self.run(argv, context)
+
+        except Exception:
+
+            self.logger.exception('Exception from Root Component!')
+
+            retval = False
 
         self.logger.debug('Returning from __call__ with %s' % pprint.pformat(retval))
 

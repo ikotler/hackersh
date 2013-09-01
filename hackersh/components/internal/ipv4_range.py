@@ -40,36 +40,22 @@ class IPv4_Range(hackersh.components.RootComponent):
 
         ipv4_addresses_gen = None
 
+        # 192.168.1.0-255
+
         try:
 
-            # 192.168.1.0-255
+            ipv4_addresses_gen = netaddr.IPGlob(argv[0])
 
-            try:
+        except netaddr.core.AddrFormatError:
 
-                ipv4_addresses_gen = netaddr.IPGlob(argv[0])
+            # 192.168.1.0/24
 
-            except netaddr.core.AddrFormatError as e:
+            ipv4_addresses_gen = netaddr.IPNetwork(argv[0])
 
-                self.logger.debug('Caught exception %s' % str(e))
+        for ipv4_addr in ipv4_addresses_gen:
 
-                try:
+            _contexts.append(dict(IPV4_ADDRESS=str(ipv4_addr)))
 
-                    # 192.168.1.0/24
-
-                    ipv4_addresses_gen = netaddr.IPNetwork(argv[0])
-
-                except netaddr.core.AddrFormatError as e:
-
-                    self.logger.debug('Caught exception %s' % str(e))
-
-                    pass
-
-            for ipv4_addr in ipv4_addresses_gen:
-
-                _contexts.append(dict(IPV4_ADDRESS=str(ipv4_addr)))
-
-        except TypeError as e:
-
-            pass
+        # [dict(IPV4_ADDRESS="192.168.1.1"), dict(IPV4_ADDRESS="192.168.1.2"), ...]
 
         return _contexts

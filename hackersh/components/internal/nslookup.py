@@ -39,26 +39,16 @@ class Nslookup(hackersh.components.RootComponent):
 
         _context = dict()
 
-        try:
+        # i.e. '127.0.0.1'
 
-            # i.e. '127.0.0.1'
+        if isinstance(argv[0], basestring):
 
-            if isinstance(argv[0], basestring):
+            _context = hackersh.components.internal.ipv4_address.IPv4_Address().main([socket.gethostbyname(argv[0])], {})
 
-                _context = hackersh.components.internal.ipv4_address.IPv4_Address().main([socket.gethostbyname(argv[0])], {})
+        # i.e. RemoteSessionContext(HOSTNAME='localhost', ...)
 
-            # i.e. RemoteSessionContext(HOSTNAME='localhost', ...)
+        else:
 
-            else:
-
-                _context = hackersh.components.internal.ipv4_address.IPv4_Address().main([socket.gethostbyname(context['HOSTNAME'])], {})
-
-        except socket.error as e:
-
-            # i.e. socket.gaierror: [Errno -5] No address associated with hostname
-
-            self.logger.debug('Caught exception %s' % str(e))
-
-            pass
+            _context = hackersh.components.internal.ipv4_address.IPv4_Address().main([socket.gethostbyname(context['HOSTNAME'])], {})
 
         return _context
