@@ -220,7 +220,7 @@ def main():
 
         # Change prompt
 
-        sys.ps1 = '% '
+        sys.ps1 = '> '
 
         motd = "Welcome to Hacker Shell Version %s!" % hackersh.__version__
 
