@@ -110,21 +110,41 @@ class ExternalComponent(hackersh.components.Component):
 
     def main(self, argv, context):
 
+        filenames = []
+
         filename = self._kwargs.get('filename', self.DEFAULT_FILENAME)
 
-        self.logger.debug('External Application Filename = ' + filename)
+        if isinstance(filename, (list, tuple)):
 
-        path = hackersh.miscellaneous.which(filename)[:1]
+            # [] = [..., ...]
 
-        if not path:
+            filenames = filename
 
-            self.logger.debug("NO PATH!")
+        else:
 
-            raise hackersh.exceptions.HackershError(context, "%s: command not found" % self._kwargs.get('filename', self.DEFAULT_FILENAME))
+            # [] = [...]
 
-        self.logger.debug('External Application Path = ' + path[0])
+            filenames.append(filename)
 
-        return self._processor(context, self._execute(path + argv, context))
+        for appfile in filenames:
+
+            self.logger.debug('Trying External Application Filename = ' + appfile)
+
+            path = hackersh.miscellaneous.which(appfile)[:1]
+
+            if not path:
+
+                self.logger.debug("File not found! (Check PATH?)")
+
+                continue
+
+            self.logger.debug('External Application Path = ' + path[0])
+
+            return self._processor(context, self._execute(path + argv, context))
+
+        raise hackersh.exceptions.HackershError(context, "%s: command not found" % filenames)
+
+        return False
 
     def _processor(self, context, data):
 
