@@ -235,6 +235,12 @@ class Component(object):
 
         return retval
 
+    # Consts
+
+    DEFAULT_QUERY = ''
+
+    DEFAULT_FILTER = True
+
 
 class RootComponent(Component):
 
