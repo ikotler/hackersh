@@ -92,7 +92,7 @@ class SqlMap(hackersh.components.external.ExternalComponentStdoutOutput):
 
     # Consts
 
-    DEFAULT_FILENAME = "sqlmap"
+    DEFAULT_FILENAME = ["sqlmap.py", "sqlmap"]
 
     DEFAULT_OUTPUT_OPTIONS = ''
 
