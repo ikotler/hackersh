@@ -60,17 +60,15 @@ class URL(hackersh.components.RootComponent):
 
             # i.e. http://locahost or http://127.0.0.1?
 
-            __context = hackersh.components.internal.ipv4_address.IPv4_Address().main([netloc], {})
+            try:
 
-            if not __context:
+                __context = hackersh.components.internal.ipv4_address.IPv4_Address().main([netloc], {})
+
+            except Exception:
+
+                # TODO: IPv6? MAC Address?
 
                 __context = hackersh.components.internal.hostname.Hostname().main([netloc], {})
-
-                if not __context:
-
-                    # TODO: IPv6? MAC Address?
-
-                    return __context
 
             # TODO: xrefer w/ URI scheme to make sure it's TCP, and not just assume
 
