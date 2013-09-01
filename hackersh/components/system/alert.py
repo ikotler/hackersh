@@ -31,6 +31,6 @@ __version__ = "0.1.0"
 
 class Alert(hackersh.components.internal.InternalComponent):
 
-    def main(self, context):
+    def main(self, argv, context):
 
-        return dict(VULNERABILITIES=self._kwargs)
+        return dict(VULNERABILITIES=[{'DESCRIPTION': argv[0]}])
