@@ -15,3 +15,12 @@
 # You should have received a copy of the GNU General Public License
 # along with Hackersh; see the file COPYING.  If not,
 # see <http://www.gnu.org/licenses/>.
+
+# Local imports
+
+import hackersh.components
+
+
+class InternalComponent(hackersh.components.Component):
+
+    pass
