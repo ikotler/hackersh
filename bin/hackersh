@@ -19,13 +19,13 @@
 # see <http://www.gnu.org/licenses/>.
 
 import sys
-import readline
-import code
-import codeop
 import argparse
 import os
-import atexit
 import pythonect
+import glob
+import cmd
+import readline
+import atexit
 
 
 try:
@@ -41,112 +41,119 @@ except ImportError:
 
 import hackersh
 import hackersh.components
-import hackersh.components.system.print_
+import hackersh.components.internal.print_
 import hackersh.conio
 import hackersh.log
 
 
 # Hackersh Console
 
-class HackershCompile(codeop.Compile):
+class HackershInteractiveConsole(cmd.Cmd):
 
-    def __init__(self):
+    def __init__(self, locals_):
 
-        codeop.Compile.__init__(self)
+        cmd.Cmd.__init__(self)
 
-    def __call__(self, source, filename, symbol):
+        self.locals_ = locals_
 
-        if source[-1] == '\\':
-            return None
+        self.histfile = locals_.get('HACKERSHHISTFILE', os.path.expanduser("~/.hackersh_history"))
 
-        return source.replace('\\\n', '')
+        self.init_history()
 
+        self.prompt = '> '
 
-class HackershCommandCompiler(codeop.CommandCompiler):
-
-    def __init__(self):
-
-        codeop.CommandCompiler.__init__(self)
-
-        self.compiler = HackershCompile()
-
-
-class HackershInteractiveConsole(code.InteractiveConsole):
-
-    def __init__(self, locals=None, histfile=os.path.expanduser("~/.hackersh_history")):
-
-        code.InteractiveConsole.__init__(self, locals)
-
-        self.compile = HackershCommandCompiler()
-
-        self.init_history(histfile)
-
-    def init_history(self, histfile):
+    def init_history(self):
 
         try:
 
-            readline.read_history_file(histfile)
+            readline.read_history_file(self.histfile)
 
         except IOError, e:
 
-            hackersh.log.logger.warn('Reading history file %s failed due to %s' % (histfile, e))
+            hackersh.log.logger.warn('Reading history file %s failed due to %s' % (self.histfile, e))
 
             # No history file
 
             pass
 
-        atexit.register(self.save_history, histfile)
+        atexit.register(self.save_history, self.histfile)
 
     def save_history(self, histfile):
 
         readline.write_history_file(histfile)
 
-    def runcode(self, code_):
+    def completedefault(self, text, line, begidx, endidx):
 
-        try:
+        return_value = []
 
-            hackersh.log.logger.debug('Evaluating `%s`' % code_)
+        # TODO: /bin => /bin/ *AND* /bin/cat /etc/passw => /bin/cat /etc/passwd
 
-            return_value = hackersh.eval(code_, self.locals)
+        if line.startswith('./') or line.startswith('/'):
 
-            # Empty List is not False, but Empty list is not True either
+            for i in glob.glob(line + '*'):
 
-            if return_value is not False and return_value:
+                return_value.append(i[len(line)-len(text):])
 
-                # Not an empty list? Reduce!
+        return return_value
 
-                if isinstance(return_value, list):
+    def default(self, line):
 
-                    return_value = reduce(lambda x, y: x+y if isinstance(x, hackersh.components.Context) else y+x, return_value)
+        # REPL (Read-eval-print loop)
 
-                self.locals['_'] = return_value
+        hackersh.log.logger.debug('Evaluating `%s`' % line)
 
-                self.locals['__IN_EVAL__'] = True
+        return_value = hackersh.eval(line, self.locals_)
 
-                hackersh.components.system.print_.print_().main([return_value], {})
+        # Empty List is not False, but Empty list is not True either
 
-        except SystemExit:
+        if return_value is not False and return_value:
 
-            raise
+            # Not an empty list? Reduce!
 
-        except hackersh.HackershError as e:
+            if isinstance(return_value, list):
 
-            print e.msg
+                return_value = reduce(lambda x, y: x+y if isinstance(x, hackersh.components.Context) else y+x, return_value)
 
-        except:
+            self.locals_['_'] = return_value
 
-            self.showtraceback()
+            self.locals_['__IN_EVAL__'] = True
 
-        else:
+            hackersh.components.internal.print_.print_().main([return_value], {})
 
-            if code.softspace(sys.stdout, 0):
+    ############
+    # Commands #
+    ############
 
-                print
+    def do_EOF(self, s):
+
+        return True
+
+    #####################
+    # Command Shortcuts #
+    #####################
+
+    do_quit = do_exit = do_EOF
+
+    ########
+    # Help #
+    ########
+
+    def help_help(self):
+
+        print "Display information about builtin commands."
+
+    def help_exit(self):
+
+        print "Exit the shell."
+
+    def help_quit(self):
+
+        print "Exit the shell."
 
 
 def set_or_update_env():
 
-    os.environ['HACKERSHPATH'] = os.path.pathsep.join(os.getenv('HACKERSHPATH', '').split(os.path.pathsep) + map(lambda x: os.path.abspath(os.path.join(os.path.dirname(hackersh.components.__file__), '..', 'components')) + '/' + x, ['system', 'internal', 'external']))
+    os.environ['HACKERSHPATH'] = os.path.pathsep.join(os.getenv('HACKERSHPATH', '').split(os.path.pathsep) + map(lambda x: os.path.abspath(os.path.join(os.path.dirname(hackersh.components.__file__), '..', 'components')) + '/' + x, ['internal', 'external']))
 
 
 def main():
@@ -226,7 +233,7 @@ def main():
 
         banner = "Hackersh Version %s\nCopyright (C) 2013 Itzik Kotler\nVisit http://www.hackersh.org for updates.\n" % hackersh.__version__
 
-        HackershInteractiveConsole(locals_).interact(banner + hackersh.conio.draw_msgbox(motd) if not args.quiet else '')
+        HackershInteractiveConsole(locals_).cmdloop(banner + hackersh.conio.draw_msgbox(motd) if not args.quiet else '')
 
     return 0
 

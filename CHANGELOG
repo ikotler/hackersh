@@ -2,6 +2,10 @@
 
 HEAD
 
+o Add `help` Command (e.g. help help, help exit, and etc.)
+
+o And Limited auto-ocomplete for Shell-like expressions (e.g. ./<TAB> and /<TAB>)
+
 o Automatically Handle (i.e. return False) and Log Exceptions from Components.
   To see the a given Component Exceptions use debug=True
 
