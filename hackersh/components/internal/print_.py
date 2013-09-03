@@ -16,13 +16,13 @@
 # along with Hackersh; see the file COPYING.  If not,
 # see <http://www.gnu.org/licenses/>.
 
-import subprocess
-import shlex
+import sys
 
 
 # Local imports
 
-import hackersh.components
+import hackersh.components.internal
+import hackersh.conio
 
 
 # Metadata
@@ -33,35 +33,32 @@ __version__ = "0.1.0"
 
 # Implementation
 
-class System(hackersh.components.Component):
+class print_(hackersh.components.internal.InternalComponent):
 
-    def __call__(self, arg):
+    def main(self, argv, context):
 
-        if self._args[0]:
+        buf = ""
 
-            # Command at __init__ and arg as stdin
+        if isinstance(argv[0], hackersh.components.Context):
 
-            command = self._args[0]
+            for root_node in [node for node, degree in argv[0].as_graph().in_degree().items() if degree == 0]:
 
-            if isinstance(arg, basestring):
+                buf += '\n'.join(hackersh.conio.draw_graph_vertical(argv[0].as_graph(), root_node))
 
-                stdin_buffer = arg
+                # Insert NL Between Root Nodes
 
-            else:
+                buf += '\n'
 
-                stdin_buffer = ''
+        elif isinstance(argv, list) and len(argv) == 1:
+
+            buf = str(argv[0])
 
         else:
 
-            # Command as arg, no stdin
+            buf = str(argv)
 
-            command = arg
-            stdin_buffer = ''
+        sys.stdout.write(buf.strip() + '\n')
 
-        self.logger.debug('Executing Shell Command: %s' % arg)
+        sys.stdout.flush()
 
-        p = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.STDOUT)
-
-        (stdout_output, stderr_output) = p.communicate(stdin_buffer)
-
-        return str(stdout_output)
+        return context

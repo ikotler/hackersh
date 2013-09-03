@@ -16,9 +16,13 @@
 # along with Hackersh; see the file COPYING.  If not,
 # see <http://www.gnu.org/licenses/>.
 
+import subprocess
+import shlex
+
+
 # Local imports
 
-import hackersh.components
+import hackersh.components.internal
 
 
 # Metadata
@@ -29,8 +33,35 @@ __version__ = "0.1.0"
 
 # Implementation
 
-class Null(hackersh.components.Component):
+class System(hackersh.components.internal.InternalComponent):
 
     def __call__(self, arg):
 
-        return ''
+        if self._args[0]:
+
+            # Command at __init__ and arg as stdin
+
+            command = self._args[0]
+
+            if isinstance(arg, basestring):
+
+                stdin_buffer = arg
+
+            else:
+
+                stdin_buffer = ''
+
+        else:
+
+            # Command as arg, no stdin
+
+            command = arg
+            stdin_buffer = ''
+
+        self.logger.debug('Executing Shell Command: %s' % arg)
+
+        p = subprocess.Popen(command, shell=True, stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.STDOUT)
+
+        (stdout_output, stderr_output) = p.communicate(stdin_buffer)
+
+        return str(stdout_output)
