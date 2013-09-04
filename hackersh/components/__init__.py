@@ -62,6 +62,10 @@ def get_all_components(components_path):
 
             component = os.path.splitext(os.path.basename(component_file))[0]
 
+            if component.startswith('__init__'):
+
+                continue
+
             try:
 
                 current_module = importlib.import_module(component)
@@ -78,7 +82,7 @@ def get_all_components(components_path):
 
                                 instances[name.lower()] = obj
 
-                                hackersh.log.logger.debug('Registering %s as %s' % (obj, name.lower()))
+                                hackersh.log.logger.debug('Registering %s from %s as %s' % (obj, component_file, name.lower()))
 
                         except TypeError:
 
