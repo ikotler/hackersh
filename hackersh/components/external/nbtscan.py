@@ -34,6 +34,7 @@ __version__ = "0.1.1"
 # Implementation
 
 class NbtScan(hackersh.components.external.ExternalComponentStdoutOutput):
+    """NetBIOS Name Information Scanner. NBTscan is a program for scanning IP networks for NetBIOS name information. It sends NetBIOS status query to each address in supplied range and lists received information in human readable form. For each responded host it lists IP address, NetBIOS computer name, logged-in user name and MAC address (such as Ethernet)."""
 
     class NbtScanStdoutOutputHandler(hackersh.components.parsers.StdoutOutputHandler):
 

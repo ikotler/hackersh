@@ -33,6 +33,7 @@ __version__ = "0.1.0"
 # Implementation
 
 class IPv4_Address(hackersh.components.RootComponent):
+    """Convert String to IPv4 Address"""
 
     def main(self, argv, context):
 

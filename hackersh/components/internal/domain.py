@@ -31,6 +31,7 @@ __version__ = "0.1.0"
 # Implementation
 
 class Domain(hackersh.components.RootComponent):
+    """Convert String to Domain"""
 
     def main(self, argv, context):
 

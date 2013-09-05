@@ -31,6 +31,7 @@ __version__ = "0.1.1"
 # Implementation
 
 class Xprobe2(hackersh.components.external.ExternalComponentFileOutput):
+    """Remote Active Operating System Fingerprinting Tool. Xprobe2 allows you to determine what operating system is running on a remote host. It sends several packets to a host and analyses the returned answers."""
 
     # XML Parser(s)
 

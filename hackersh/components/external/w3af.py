@@ -37,6 +37,7 @@ __version__ = "0.1.1"
 # Implementation
 
 class W3af(hackersh.components.external.ExternalComponentFileOutput):
+    """Framework to Find and Exploit Web Application Vulnerabilities. W3af is a Web Application Attack and Audit Framework which aims to identify and exploit all web application vulnerabilities"""
 
     class W3afHTMLOutputHandler(hackersh.components.parsers.HTMLOutputHandler):
 

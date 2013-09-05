@@ -26,6 +26,7 @@ import glob
 import cmd
 import readline
 import atexit
+import textwrap
 
 
 try:
@@ -142,6 +143,44 @@ class HackershInteractiveConsole(cmd.Cmd):
         """Display information about builtin commands"""
 
         cmd.Cmd.do_help(self, arg)
+
+    def do_info(self, arg):
+        """Queries the supplied component or components for information"""
+
+        if not arg:
+
+            return self.do_help('info')
+
+        else:
+
+            for component_name in arg.split():
+
+                if component_name not in self.locals_:
+
+                    print "*** Invalid component name: %s" % component_name
+
+                else:
+
+                    comp_instance = self.locals_[component_name]
+
+                    print "Component: %s\n" \
+                          "Version: %s\n" \
+                          "Source: %s\n" \
+                          "Type: %s\n" \
+                          "Provided by: %s\n" \
+                          "Filter: %s\n" \
+                          "Query: %s\n" \
+                          "Description:\n   %s" \
+                          "\n" % ( \
+                                  component_name, \
+                                  sys.modules[comp_instance.__module__].__version__, \
+                                  sys.modules[comp_instance.__module__].__file__, \
+                                  comp_instance.__bases__[0].__name__, \
+                                  sys.modules[comp_instance.__module__].__author__, \
+                                  'None' if comp_instance.DEFAULT_FILTER is True else comp_instance.DEFAULT_FILTER, \
+                                  comp_instance.DEFAULT_QUERY, \
+                                  '\n   '.join(textwrap.wrap(comp_instance.__doc__ or '<No description>', 77)) \
+                                 )
 
     def do_EOF(self, s):
         """Exit the shell"""

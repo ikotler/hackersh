@@ -35,6 +35,7 @@ __version__ = "0.1.0"
 # Implementation
 
 class URL(hackersh.components.RootComponent):
+    """Convert String to URL. This component uses the urlparse module available on the Python Standard Library to parse a URL"""
 
     def main(self, argv, context):
 

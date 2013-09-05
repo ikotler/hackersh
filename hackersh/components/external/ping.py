@@ -30,6 +30,7 @@ __version__ = "0.1.1"
 # Implementation
 
 class Ping(hackersh.components.external.ExternalComponentReturnValueOutput):
+    """Send ICMP ECHO_REQUEST to Network Hosts. Ping uses the ICMP protocol's mandatory ECHO_REQUEST datagram to elicit an ICMP ECHO_RESPONSE from a host or gateway."""
 
     def _processor(self, context, retval):
 

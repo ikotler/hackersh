@@ -30,6 +30,7 @@ __version__ = "0.1.0"
 # Implementation
 
 class Alert(hackersh.components.internal.InternalComponent):
+    """Generate User-defined Vulnerability Alert"""
 
     def main(self, argv, context):
 

@@ -33,6 +33,7 @@ __version__ = "0.1.0"
 # Implementation
 
 class Hostname(hackersh.components.RootComponent):
+    """Convert String to Hostname"""
 
     def main(self, argv, context):
 

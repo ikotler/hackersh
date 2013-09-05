@@ -34,6 +34,7 @@ __version__ = "0.1.0"
 # Implementation
 
 class print_(hackersh.components.internal.InternalComponent):
+    """Print Context to the Standard Output"""
 
     def main(self, argv, context):
 

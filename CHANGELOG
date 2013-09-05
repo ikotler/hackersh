@@ -2,6 +2,8 @@
 
 HEAD
 
+o Add `info` Command (e.g. info nmap, info ipv4_address, and etc.)
+
 o Add `help` Command (e.g. help help, help exit, and etc.)
 
 o And Limited auto-ocomplete for Shell-like expressions (e.g. ./<TAB> and /<TAB>)

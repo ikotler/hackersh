@@ -34,6 +34,7 @@ __version__ = "0.1.0"
 # Implementation
 
 class System(hackersh.components.internal.InternalComponent):
+    """Pass a String to the Shell. This component uses the subprocess module available on the Python Standard Library to spawn processes"""
 
     def __call__(self, arg):
 
