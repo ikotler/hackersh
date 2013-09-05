@@ -2,6 +2,8 @@
 
 HEAD
 
+o Add `show` Command (e.g. show)
+
 o Add `info` Command (e.g. info nmap, info ipv4_address, and etc.)
 
 o Add `help` Command (e.g. help help, help exit, and etc.)
