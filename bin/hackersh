@@ -62,6 +62,12 @@ class HackershInteractiveConsole(cmd.Cmd):
 
         self.prompt = '> '
 
+        # Hack data members `self.doc_header', `self.misc_header', and `self.undoc_header' for Sections
+
+        self.doc_header = 'Part A'
+        self.misc_header = 'Part B'
+        self.undoc_header = 'Part C'
+
     def init_history(self):
 
         try:
@@ -120,11 +126,27 @@ class HackershInteractiveConsole(cmd.Cmd):
 
             hackersh.components.internal.print_.print_().main([return_value], {})
 
+    def print_topics(self, header, cmds, cmdlen, maxcol):
+
+        if header == "Part A":
+
+            print hackersh.conio.draw_underline('Shell Builtin Commands', '=')
+            print hackersh.conio.draw_tbl_from_list([['?', 'Display information about builtin commands']] + map(lambda x: [x, getattr(self, 'do_' + x).__doc__.split('\n')[0]], filter(lambda x: x != x.upper(), cmds)), ["Command", "Description"], 4)
+            print ' '
+
     ############
     # Commands #
     ############
 
+    def do_help(self, arg):
+        """Display information about builtin commands"""
+
+        cmd.Cmd.do_help(self, arg)
+
     def do_EOF(self, s):
+        """Exit the shell"""
+
+        print ' '
 
         return True
 
@@ -133,22 +155,6 @@ class HackershInteractiveConsole(cmd.Cmd):
     #####################
 
     do_quit = do_exit = do_EOF
-
-    ########
-    # Help #
-    ########
-
-    def help_help(self):
-
-        print "Display information about builtin commands."
-
-    def help_exit(self):
-
-        print "Exit the shell."
-
-    def help_quit(self):
-
-        print "Exit the shell."
 
 
 def set_or_update_env():
