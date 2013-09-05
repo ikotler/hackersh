@@ -68,12 +68,37 @@ def terminalsize():
     return int(cr[1]), int(cr[0])
 
 
-def draw_underline(string):
+def draw_underline(string, char='-'):
 
-    return string + '\n' + '-' * len(string) + '\n'
+    return string + '\n' + char * len(string) + '\n'
 
 
-def __mk_tbl(fields):
+def draw_tbl_from_list(list_of_lists, fields, tbl_ident=0):
+
+    tbl = prettytable.PrettyTable(fields, border=False, left_padding_width=0, right_padding_width=4)
+
+    tbl.padding_width = tbl_ident
+
+    decorate_row = []
+
+    for k in tbl.align:
+
+        tbl.align[k] = 'l'
+
+    for field in fields:
+
+        decorate_row.append('-' * len(field))
+
+    tbl.add_row(decorate_row)
+
+    for values in list_of_lists:
+
+        tbl.add_row(values)
+
+    return tbl.get_string(sortby=fields[0])
+
+
+def draw_tbl_from_dict(data, fields, values):
 
     tbl = prettytable.PrettyTable(fields, left_padding_width=1, right_padding_width=1, hrules=prettytable.ALL)
 
@@ -83,13 +108,6 @@ def __mk_tbl(fields):
 
         tbl.align[k] = 'l'
 
-    return (tbl, col_max_width)
-
-
-def draw_static_tbl(data, fields, values):
-
-    (tbl, col_max_width) = __mk_tbl(fields)
-
     for dataset in data:
 
         row_data = []
@@ -97,21 +115,6 @@ def draw_static_tbl(data, fields, values):
         for value in values:
 
             row_data.append('\n'.join(textwrap.wrap(dataset.get(value, '<N/A>'), col_max_width)))
-
-        tbl.add_row(row_data)
-
-    return tbl.get_string()
-
-
-def draw_dict_tbl(dct, fields, keys):
-
-    (tbl, col_max_width) = __mk_tbl(fields)
-
-    for key in keys:
-
-        row_data = [str(key).title()]
-
-        row_data.append('\n'.join(textwrap.wrap(str(dct.get(key, '<N/A>')), col_max_width)))
 
         tbl.add_row(row_data)
 
@@ -173,7 +176,7 @@ def draw_graph_vertical(graph, node):
         lines.append(
             '\n' + \
             draw_underline('Vulnerabilities:') + '\n' + \
-            draw_static_tbl(graph.node[node]['VULNERABILITIES'], ["VULNERABILITY DESCRIPTION", "URL"], ["DESCRIPTION", "DESTINATION"]) + '\n' \
+            draw_tbl_from_dict(graph.node[node]['VULNERABILITIES'], ["VULNERABILITY DESCRIPTION", "URL"], ["DESCRIPTION", "DESTINATION"]) + '\n' \
         )
 
     last = graph.successors(node)[-1] if graph.successors(node) else None
