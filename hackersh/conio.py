@@ -22,6 +22,7 @@ import termios
 import struct
 import textwrap
 import prettytable
+import readline
 
 
 # http://stackoverflow.com/questions/566746/how-to-get-console-window-width-in-python/566752#566752
@@ -192,3 +193,14 @@ def draw_graph_vertical(graph, node):
             prefix = '  ' if sucessor_node is last else '| '
 
     return lines
+
+
+##################
+# Initialization #
+##################
+
+# Mac OS X
+
+if 'libedit' in readline.__doc__:
+
+    readline.parse_and_bind("bind ^I rl_complete")
