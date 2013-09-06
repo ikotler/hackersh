@@ -105,27 +105,29 @@ class HackershInteractiveConsole(cmd.Cmd):
 
     def default(self, line):
 
-        # REPL (Read-eval-print loop)
+        if not line.startswith('#'):
 
-        hackersh.log.logger.debug('Evaluating `%s`' % line)
+            # REPL (Read-eval-print loop)
 
-        return_value = hackersh.eval(line, self.locals_)
+            hackersh.log.logger.debug('Evaluating `%s`' % line)
 
-        # Empty List is not False, but Empty list is not True either
+            return_value = hackersh.eval(line, self.locals_)
 
-        if return_value is not False and return_value:
+            # Empty List is not False, but Empty list is not True either
 
-            # Not an empty list? Reduce!
+            if return_value is not False and return_value:
 
-            if isinstance(return_value, list):
+                # Not an empty list? Reduce!
 
-                return_value = reduce(lambda x, y: x+y if isinstance(x, hackersh.components.Context) else y+x, return_value)
+                if isinstance(return_value, list):
 
-            self.locals_['_'] = return_value
+                    return_value = reduce(lambda x, y: x+y if isinstance(x, hackersh.components.Context) else y+x, return_value)
 
-            self.locals_['__IN_EVAL__'] = True
+                self.locals_['_'] = return_value
 
-            hackersh.components.internal.print_.print_().main([return_value], {})
+                self.locals_['__IN_EVAL__'] = True
+
+                hackersh.components.internal.print_.print_().main([return_value], {})
 
     def print_topics(self, header, cmds, cmdlen, maxcol):
 
