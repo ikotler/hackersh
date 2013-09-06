@@ -50,7 +50,7 @@ def __hackersh_preprocessor(source, sym_tbl):
 
     # e.g. nmap
 
-    if tokens[0] in sym_tbl and not isinstance(sym_tbl[tokens[0]], types.FunctionType):
+    if not tokens[0].startswith('_') and tokens[0] in sym_tbl and not isinstance(sym_tbl[tokens[0]], types.FunctionType):
 
         # i.e. nmap -sS -P0
 
@@ -69,6 +69,14 @@ def __hackersh_preprocessor(source, sym_tbl):
     elif tokens[0].startswith('/') or tokens[0].startswith('./') or tokens[0].startswith('../'):
 
         source = 'system(""" ' + source + ' """)'
+
+    # e.g. _
+
+    else:
+
+        # AS IS
+
+        pass
 
     return source
 
