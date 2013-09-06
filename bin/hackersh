@@ -95,7 +95,7 @@ class HackershInteractiveConsole(cmd.Cmd):
 
         # TODO: /bin => /bin/ *AND* /bin/cat /etc/passw => /bin/cat /etc/passwd
 
-        if line.startswith('./') or line.startswith('/'):
+        if line.startswith('./') or line.startswith('/') or line.startswith('../'):
 
             for i in glob.glob(line + '*'):
 
