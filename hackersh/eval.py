@@ -17,7 +17,6 @@
 # see <http://www.gnu.org/licenses/>.
 
 import types
-import os
 import shlex
 import pythonect
 import networkx
@@ -25,7 +24,7 @@ import networkx
 
 # Local imports
 
-import miscellaneous
+import hackersh.miscellaneous
 
 
 def __quotes_wrap(list):
@@ -40,8 +39,6 @@ def __quotes_wrap(list):
 
 
 def __hackersh_preprocessor(source, sym_tbl):
-
-    orig_source = source
 
     if source.startswith('"""$'):
 
@@ -73,8 +70,6 @@ def __hackersh_preprocessor(source, sym_tbl):
 
         source = 'system(""" ' + source + ' """)'
 
-    # print '%s => %s' % (orig_source, source)
-
     return source
 
 
@@ -105,7 +100,7 @@ def parse(source):
     command_buffer = ""
     depth = 0
 
-    tokens = miscellaneous.shell_split(source.encode('utf8'))
+    tokens = hackersh.miscellaneous.shell_split(source.encode('utf8'))
 
     new_source = ""
 

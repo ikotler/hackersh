@@ -16,11 +16,13 @@
 # along with Hackersh; see the file COPYING.  If not,
 # see <http://www.gnu.org/licenses/>.
 
-from _version import __version__
+"""Parse and execute Hackersh code"""
+
+from hackersh._version import __version__
 
 
 # API
 
-from objects import *
-from exceptions import *
-from eval import eval
+from hackersh.components import *
+from hackersh.exceptions import *
+from hackersh.eval import eval, parse

@@ -38,7 +38,7 @@ class Ping(hackersh.components.external.ExternalComponentReturnValueOutput):
 
         if retval == 0:
 
-            _context['PINGABLE']=True
+            _context['PINGABLE'] = True
 
         return _context
 

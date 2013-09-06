@@ -78,7 +78,7 @@ def _async_communicate(p, stdin=None, logger=None):
 
                 stderr.append(read)
 
-        if p.poll() != None:
+        if p.poll() is not None:
             break
 
     stdout_stream = ''.join(stdout)

@@ -96,6 +96,7 @@ def get_all_components(components_path):
 
     return instances
 
+
 ###########
 # Classes #
 ###########

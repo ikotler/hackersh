@@ -175,9 +175,9 @@ def draw_graph_vertical(graph, node):
     if graph.node[node].get('VULNERABILITIES', False):
 
         lines.append(
-            '\n' + \
-            draw_underline('Vulnerabilities:') + '\n' + \
-            draw_tbl_from_dict(graph.node[node]['VULNERABILITIES'], ["VULNERABILITY DESCRIPTION", "URL"], ["DESCRIPTION", "DESTINATION"]) + '\n' \
+            '\n' +
+            draw_underline('Vulnerabilities:') + '\n' +
+            draw_tbl_from_dict(graph.node[node]['VULNERABILITIES'], ["VULNERABILITY DESCRIPTION", "URL"], ["DESCRIPTION", "DESTINATION"]) + '\n'
         )
 
     last = graph.successors(node)[-1] if graph.successors(node) else None

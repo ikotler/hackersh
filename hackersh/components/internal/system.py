@@ -17,7 +17,6 @@
 # see <http://www.gnu.org/licenses/>.
 
 import subprocess
-import shlex
 
 
 # Local imports
