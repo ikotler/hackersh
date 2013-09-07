@@ -2,6 +2,12 @@
 
 HEAD
 
+o Autocomplete with TAB. Examples:
+  sho<TAB>
+  info nm<TAB>
+  "127.0.0.1" | <TAB>
+  and etc.
+
 o Add `show` Command (e.g. show)
 
 o Add `info` Command (e.g. info nmap, info ipv4_address, and etc.)

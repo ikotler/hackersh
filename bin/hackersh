@@ -27,6 +27,8 @@ import cmd
 import readline
 import atexit
 import textwrap
+import shlex
+import itertools
 
 
 try:
@@ -89,17 +91,113 @@ class HackershInteractiveConsole(cmd.Cmd):
 
         readline.write_history_file(histfile)
 
+    def _groupby_cmds(self, line):
+
+        tokens = shlex.split(line)
+
+        groups = []
+
+        for k, g in itertools.groupby(tokens, lambda x: x == '|' or x == '->'):
+
+            groups.append(list(g))
+
+        return groups
+
+    def parseline(self, line):
+
+        line = line.strip()
+
+        parsed_cmd, parsed_arg, parsed_line = cmd.Cmd.parseline(self, line)
+
+        if not parsed_cmd:
+
+            groups = self._groupby_cmds(line)
+
+            parsed_cmd = groups[-1][0]
+
+            parsed_args = ' '.join(groups[-1][1:])
+
+        return parsed_cmd, parsed_arg, parsed_line
+
+    def _find_slash(self, text):
+
+        # Starts With?
+
+        idx = 0
+
+        if not text.startswith('../'):
+
+            if not text.startswith('./'):
+
+                if not text.startswith('/'):
+
+                    # Ends With?
+
+                    idx = text.rfind('../')
+
+                    if idx == -1:
+
+                        idx = text.rfind('./')
+
+                        if idx == -1:
+
+                            idx = text.rfind('/')
+
+        return idx
+
+    def _shellcomplete(self, text, buf):
+
+        # TODO: Need optimization (test cases: '/', '/bin/', '/bin/l', '/bin/le')
+
+        return_value = []
+
+        working_buffer = text
+
+        idx = self._find_slash(text)
+
+        if idx == -1:
+
+            idx = self._find_slash(buf)
+
+            if idx != -1:
+
+                working_buffer = buf
+
+                for i in glob.glob(working_buffer[idx:] + '*'):
+
+                    return_value.append(i[i.rfind(text):])
+
+        else:
+
+            for i in glob.glob(working_buffer[idx:] + '*'):
+
+                return_value.append(i[i.rfind('/')+1:])
+
+        return return_value
+
     def completedefault(self, text, line, begidx, endidx):
 
         return_value = []
 
-        # TODO: /bin => /bin/ *AND* /bin/cat /etc/passw => /bin/cat /etc/passwd
+        if text:
 
-        if line.startswith('./') or line.startswith('/') or line.startswith('../'):
+            groups = self._groupby_cmds(line)
 
-            for i in glob.glob(line + '*'):
+            return_value = self._shellcomplete(groups[-1][-1], line)
 
-                return_value.append(i[len(line)-len(text):])
+            if not return_value:
+
+                return filter(lambda x: x.startswith(text), self.locals_)
+
+        else:
+
+            # Line begins with '../' or './' or '/'
+
+            return_value = self._shellcomplete(line, text)
+
+            if not return_value:
+
+                return self.locals_.keys()
 
         return return_value
 
@@ -153,6 +251,10 @@ class HackershInteractiveConsole(cmd.Cmd):
     # Commands #
     ############
 
+    def no_complete(self, text, line, begidx, endidx):
+
+        return []
+
     def do_help(self, arg):
         """Display information about builtin commands"""
 
@@ -172,6 +274,18 @@ class HackershInteractiveConsole(cmd.Cmd):
         print hackersh.conio.draw_underline('External Components', '=')
 
         print hackersh.conio.draw_tbl_from_list(map(lambda k: [k, 'N/A' if not self.locals_[k].__doc__ else self.locals_[k].__doc__.split('.')[0]], filter(lambda x: issubclass(self.locals_[x], hackersh.components.external.ExternalComponent), self.locals_)), ["Name", "Description"], 4) + '\n'
+
+    complete_show = no_complete
+
+    def complete_info(self, text, line, begidx, endidx):
+
+        if text:
+
+            return filter(lambda x: x.startswith(text), self.locals_)
+
+        else:
+
+            return self.locals_.keys()
 
     def do_info(self, arg):
         """Queries the supplied component or components for information"""
@@ -217,6 +331,8 @@ class HackershInteractiveConsole(cmd.Cmd):
         print ' '
 
         return True
+
+    complete_quit = complete_exit = no_complete
 
     #####################
     # Command Shortcuts #
