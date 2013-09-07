@@ -103,6 +103,18 @@ class HackershInteractiveConsole(cmd.Cmd):
 
         return return_value
 
+    def precmd(self, line):
+
+        new_line = line
+
+        # Replace 'EOF' to 'exit' (i.e. do_exit() for "EOF")
+
+        if new_line == 'EOF':
+
+            new_line = 'exit'
+
+        return new_line
+
     def default(self, line):
 
         if not line.startswith('#'):
@@ -199,7 +211,7 @@ class HackershInteractiveConsole(cmd.Cmd):
                                   '\n   '.join(textwrap.wrap(comp_instance.__doc__ or '<No description>', 77)) \
                                  )
 
-    def do_EOF(self, s):
+    def do_exit(self, s):
         """Exit the shell"""
 
         print ' '
@@ -210,7 +222,7 @@ class HackershInteractiveConsole(cmd.Cmd):
     # Command Shortcuts #
     #####################
 
-    do_quit = do_exit = do_EOF
+    do_quit = do_exit
 
 
 def set_or_update_env():
