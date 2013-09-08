@@ -2,6 +2,9 @@
 
 HEAD
 
+o `print` component will print a given context, while `print_all` will join
+  (i.e. reduce) all contexts into a single tree and print that tree.
+
 o Components can return Component-level Errors via HackershError() class.
   Aggregation occurs at Console-level prior to printing the return value.
 

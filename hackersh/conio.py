@@ -136,6 +136,39 @@ def draw_msgbox(string):
     return msgbox
 
 
+def draw_graph_horizontal(context):
+
+    ctx_as_dict = context.as_dict()
+
+    output = "*** empty context ***"
+
+    if ctx_as_dict:
+
+        fields = ["Property", "Value"]
+
+        tbl = prettytable.PrettyTable(fields, left_padding_width=1, right_padding_width=1, hrules=prettytable.ALL)
+
+        col_max_width = (terminalsize()[0] / len(fields)) - 30
+
+        for k in tbl.align:
+
+            tbl.align[k] = 'l'
+
+        for key in filter(lambda key: not key.startswith('_') and key != 'VULNERABILITIES', ctx_as_dict.keys()):
+
+            row_data = [str(key).title()]
+
+            row_data.append('\n'.join(textwrap.wrap(str(ctx_as_dict.get(key, '<N/A>')), col_max_width)))
+
+            tbl.add_row(row_data)
+
+        root_node = [node for node, degree in context.as_graph().in_degree().items() if degree == 0]
+
+        output = '\n' + draw_underline('Properties:') + '\n' + tbl.get_string() + '\n\n' + draw_underline('Graph:') + '\n' + '\n'.join(draw_graph_vertical(context.as_graph(), root_node[0]))
+
+    return output
+
+
 def draw_graph_vertical(graph, node):
 
     lines = []

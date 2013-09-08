@@ -52,17 +52,31 @@ def __hackersh_preprocessor(source, sym_tbl):
 
     if not tokens[0].startswith('_') and tokens[0] in sym_tbl and isinstance(sym_tbl[tokens[0]], (type, types.ClassType)) and issubclass(sym_tbl[tokens[0]], hackersh.Component):
 
+        cls_name = tokens[0]
+
+        # Alias?
+
+        if tokens[0].lower() != sym_tbl[tokens[0]].__name__.lower():
+
+            cls_name = 'alias_' + sym_tbl[tokens[0]].__name__.lower()
+
         # i.e. nmap -sS -P0
 
         if len(tokens) > 1:
 
-            source = "%s('%s')" % (tokens[0], ' '.join(tokens[1:]))
+            source = "%s('%s')" % (cls_name, ' '.join(tokens[1:]))
 
         # i.e. nmap
 
         else:
 
-            source = "%s()" % source
+            source = "%s()" % cls_name
+
+            # Reduce?
+
+            if cls_name.endswith('_all'):
+
+                source += '(_!)'
 
     # i.e. /usr/bin/nmap or ./nmap
 

@@ -189,7 +189,7 @@ class HackershInteractiveConsole(cmd.Cmd):
 
             if not return_value:
 
-                return filter(lambda x: x.startswith(text), self.locals_)
+                return filter(lambda x: x.startswith(text), self.locals_['__COMPONENT_NAMES__'])
 
         else:
 
@@ -199,7 +199,7 @@ class HackershInteractiveConsole(cmd.Cmd):
 
             if not return_value:
 
-                return self.locals_.keys()
+                return self.locals_['__COMPONENT_NAMES__'].keys()
 
         return return_value
 
@@ -239,13 +239,17 @@ class HackershInteractiveConsole(cmd.Cmd):
 
                     return_value = [return_value]
 
-                meaningful_return_value = filter(lambda x: not isinstance(x, hackersh.components.HackershError), return_value)
+                meaningful_return_value = filter(lambda x: not isinstance(x, hackersh.components.HackershError) and not isinstance(x, bool), return_value)
 
                 if meaningful_return_value:
 
-                    return_value = reduce(lambda x, y: x+y if isinstance(x, hackersh.components.Context) else y+x, meaningful_return_value)
+                    if len(meaningful_return_value) == 1:
 
-                    hackersh.components.internal.print_.print_().main([return_value], {})
+                        hackersh.components.internal.print_.special_print().main([], meaningful_return_value)
+
+                    else:
+
+                        hackersh.components.internal.print_.special_print_all().main([], meaningful_return_value)
 
                 else:
 
@@ -301,11 +305,11 @@ class HackershInteractiveConsole(cmd.Cmd):
 
         if text:
 
-            return filter(lambda x: x.startswith(text), self.locals_)
+            return filter(lambda x: x.startswith(text), self.locals_['__COMPONENT_NAMES__'])
 
         else:
 
-            return self.locals_.keys()
+            return self.locals_['__COMPONENT_NAMES__'].keys()
 
     def do_info(self, arg):
         """Queries the supplied component or components for information"""
@@ -396,7 +400,7 @@ def main(argv=sys.argv):
 
     if args.verbose:
 
-        hackersh.log.logger.setLevel(hackersh.log.logging.ERROR - ((args.verbose % 4) * 10))
+        hackersh.log.logging.getLogger().setLevel(hackersh.log.logging.ERROR - ((args.verbose % 4) * 10))
 
     # Argument Passing
 

@@ -44,7 +44,9 @@ import hackersh.miscellaneous
 
 def get_all_components(components_path):
 
-    instances = {}
+    classes = {}
+
+    classes['__COMPONENT_NAMES__'] = {}
 
     # For each directory in components path
 
@@ -80,9 +82,19 @@ def get_all_components(components_path):
 
                             if obj != Component and issubclass(obj, Component):
 
-                                instances[name.lower()] = obj
+                                com_name = name.lower()
 
-                                hackersh.log.logger.debug('Registering %s from %s as %s' % (obj, component_file, name.lower()))
+                                if hasattr(obj, 'DISPLAY_NAME'):
+
+                                    com_name = getattr(obj, 'DISPLAY_NAME').lower()
+
+                                    classes['alias_' + name.lower()] = obj
+
+                                classes[com_name] = obj
+
+                                classes['__COMPONENT_NAMES__'][com_name] = True
+
+                                hackersh.log.logger.debug('Registering %s from %s as %s' % (obj, component_file, com_name.lower()))
 
                         except TypeError:
 
@@ -94,7 +106,7 @@ def get_all_components(components_path):
 
                 pass
 
-    return instances
+    return classes
 
 
 ###########
@@ -178,7 +190,17 @@ class Component(object):
 
                     self.logger.debug('Pushing %s = %s, return_list will be equal This Push Only' % (base_keyname, entry_or_entries))
 
-                    return_value = context.push(base_keyname, entry_or_entries)
+                    try:
+
+                        return_value = context.push(base_keyname, entry_or_entries)
+
+                    # i.e "127.0.0.1" | ipv4_address | nmap | print_all => AttributeError: 'list' object has no attribute 'push'
+
+                    except AttributeError:
+
+                        # Result of reducing-component
+
+                        return_value = entry_or_entries
 
         # False or Empty List (i.e. [])
 
@@ -343,6 +365,16 @@ class Context(object):
             # From `graph`
 
             self._graph = graph
+
+    def as_dict(self):
+
+        ret_dict = {}
+
+        if self._graph.nodes():
+
+            ret_dict = reduce(lambda x, y: dict(x, **y), [self._graph.node[n] for n in self._graph.nodes()])
+
+        return ret_dict
 
     def as_graph(self):
 
