@@ -132,6 +132,12 @@ class Component(object):
 
         self.logger.debug('%s Returned:\n%s' % (self.main, pprint.pformat(entry_or_entries)))
 
+        base_keyname = self.__class__.__name__.lower()
+
+        if self._args:
+
+            base_keyname += ' ' + reduce(lambda x,y: x+y, self._args)
+
         if entry_or_entries:
 
             if isinstance(entry_or_entries, list):
@@ -140,7 +146,7 @@ class Component(object):
 
                 for entry in entry_or_entries:
 
-                    entry_key = self.__class__.__name__.lower() + "_result_#" + str(result_id)
+                    entry_key = base_keyname + "_result_#" + str(result_id)
 
                     self.logger.debug('Pushing %s = %s to return_value List' % (entry_key, entry))
 
@@ -166,11 +172,11 @@ class Component(object):
 
                 else:
 
-                    # return_value.append(context.push(self.__class__.__name__.lower(), entry_or_entries))
+                    # return_value.append(context.push(base_keyname, entry_or_entries))
 
-                    self.logger.debug('Pushing %s = %s, return_list will be equal This Push Only' % (self.__class__.__name__.lower(), entry_or_entries))
+                    self.logger.debug('Pushing %s = %s, return_list will be equal This Push Only' % (base_keyname, entry_or_entries))
 
-                    return_value = context.push(self.__class__.__name__.lower(), entry_or_entries)
+                    return_value = context.push(base_keyname, entry_or_entries)
 
         # False or Empty List (i.e. [])
 
