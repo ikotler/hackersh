@@ -366,24 +366,27 @@ def set_or_update_env():
     os.environ['HACKERSHPATH'] = os.path.pathsep.join(os.getenv('HACKERSHPATH', '').split(os.path.pathsep) + map(lambda x: os.path.abspath(os.path.join(os.path.dirname(hackersh.components.__file__), '..', 'components')) + '/' + x, ['internal', 'external']))
 
 
-def main():
+def main(argv=sys.argv):
+
+    banner = "Hackersh version %s ( http://www.hackersh.org )" % hackersh.__version__
 
     locals_ = {}
 
     locals_['_'] = hackersh.components.Context()
 
-    banner = "Hackersh version %s ( http://www.hackersh.org )" % hackersh.__version__
-
     # Parse command-line arguments
 
-    parser = argparse.ArgumentParser(sys.argv)
+    parser = argparse.ArgumentParser(prog='hackersh')
 
     parser.add_argument('script', metavar='file', nargs='?', type=argparse.FileType('rt'))
+    parser.add_argument('arg', metavar='arg', nargs='*', help='arguments passed to program in sys.argv[1:]')
     parser.add_argument('--verbose', '-v', action='count', default=0)
     parser.add_argument('--quiet', '-q', help='Do not print the normal Hackersh welcome', action='store_true', default=0)
     parser.add_argument('--version', '-V', action='version', version=banner)
+    parser.add_argument('--interactive', '-i', action='store_true', default=False, help='inspect interactively after running script')
+    parser.add_argument('--command', '-c', metavar='cmd', nargs='*', help='program passed in as string')
 
-    args = parser.parse_args()
+    args = parser.parse_args(args=argv[1:])
 
     # Set or Update Hackersh Environment Variables
 
@@ -394,6 +397,12 @@ def main():
     if args.verbose:
 
         hackersh.log.logger.setLevel(hackersh.log.logging.ERROR - ((args.verbose % 4) * 10))
+
+    # Argument Passing
+
+    if args.arg:
+
+        sys.argv = [sys.argv[0]] + args.arg
 
     # Add current working directory to sys.path
 
@@ -410,6 +419,12 @@ def main():
     else:
 
         locals_.update(components)
+
+    # Command line mode (i.e. ./hackersh -c "'127.0.0.1' | ipv4_address | nmap")
+
+    if args.command:
+
+        hackersh.eval(args.command[0], locals_)
 
     # Script-mode (i.e. ./hackersh script or #!/usr/bin/env hackersh)
 
@@ -433,13 +448,13 @@ def main():
 
         args.script.close()
 
-    # Interactive-mode (i.e. ./hackersh)
+    if not args.command and not args.script:
 
-    else:
+        args.interactive = True
 
-        # Change prompt
+    # Interactive-mode (i.e. ./pythonect)
 
-        sys.ps1 = '> '
+    if args.interactive:
 
         motd = "Welcome to Hacker Shell Version %s!" % hackersh.__version__
 
