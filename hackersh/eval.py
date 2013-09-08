@@ -20,7 +20,6 @@ import types
 import shlex
 import pythonect
 import networkx
-import types
 
 
 # Local imports

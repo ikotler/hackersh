@@ -136,7 +136,7 @@ class Component(object):
 
         if self._args:
 
-            base_keyname += ' ' + reduce(lambda x,y: x+y, self._args)
+            base_keyname += ' ' + reduce(lambda x, y: x + y, self._args)
 
         if entry_or_entries:
 

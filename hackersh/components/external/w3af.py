@@ -277,7 +277,7 @@ class W3af(hackersh.components.external.ExternalComponentFileOutput):
 
         p = subprocess.Popen(shlex.split(cmd), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-        (stdout_output, stderr_output) = hackersh.components.external._async_communicate(p, None, self.logger)
+        hackersh.components.external._async_communicate(p, None, self.logger)
 
         tmp_output_file.flush()
 

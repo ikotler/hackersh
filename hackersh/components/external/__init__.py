@@ -202,7 +202,7 @@ class ExternalComponentStreamOutput(ExternalComponent):
 
             p = subprocess.Popen(hackersh.miscellaneous.shell_split(cmd), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-            (stdout_output, stderr_output) = _async_communicate(p, self._kwargs.get('stdin', self.DEFAULT_STDIN_BUFFER), self.logger)
+            _async_communicate(p, self._kwargs.get('stdin', self.DEFAULT_STDIN_BUFFER), self.logger)
 
             tmpfile.flush()
 
@@ -277,7 +277,7 @@ class ExternalComponentFileOutput(ExternalComponentStreamOutput):
 
             p = subprocess.Popen(hackersh.miscellaneous.shell_split(cmd), stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-            (stdout_output, stderr_output) = _async_communicate(p, self._kwargs.get('stdin', self.DEFAULT_STDIN_BUFFER), self.logger)
+            _async_communicate(p, self._kwargs.get('stdin', self.DEFAULT_STDIN_BUFFER), self.logger)
 
             tmpfile.flush()
 
