@@ -63,7 +63,7 @@ class HackershInteractiveConsole(cmd.Cmd):
 
         self.init_history()
 
-        self.prompt = '> '
+        self.prompt = locals_.get('PROMPT', '> ')
 
         # Hack data members `self.doc_header', `self.misc_header', and `self.undoc_header' for Sections
 
@@ -109,7 +109,7 @@ class HackershInteractiveConsole(cmd.Cmd):
 
         parsed_cmd, parsed_arg, parsed_line = cmd.Cmd.parseline(self, line)
 
-        if not parsed_cmd:
+        if not parsed_cmd and parsed_line:
 
             groups = self._groupby_cmds(line)
 
@@ -212,6 +212,12 @@ class HackershInteractiveConsole(cmd.Cmd):
             new_line = 'exit'
 
         return new_line
+
+    def postcmd(self, stop, line):
+
+        self.prompt = self.locals_.get('PROMPT', '> ')
+
+        return cmd.Cmd.postcmd(self, stop, line)
 
     def default(self, line):
 

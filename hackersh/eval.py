@@ -20,6 +20,7 @@ import types
 import shlex
 import pythonect
 import networkx
+import types
 
 
 # Local imports
@@ -50,7 +51,7 @@ def __hackersh_preprocessor(source, sym_tbl):
 
     # e.g. nmap
 
-    if not tokens[0].startswith('_') and tokens[0] in sym_tbl and not isinstance(sym_tbl[tokens[0]], types.FunctionType):
+    if not tokens[0].startswith('_') and tokens[0] in sym_tbl and isinstance(sym_tbl[tokens[0]], (type, types.ClassType)) and issubclass(sym_tbl[tokens[0]], hackersh.Component):
 
         # i.e. nmap -sS -P0
 
@@ -159,6 +160,6 @@ def eval(source, locals_):
 
             graph = source
 
-        return_value = pythonect.eval(_hackersh_graph_transform(graph, locals_), locals_, {})
+        return_value = pythonect.eval(_hackersh_graph_transform(graph, locals_), {}, locals_)
 
     return return_value

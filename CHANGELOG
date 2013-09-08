@@ -2,10 +2,14 @@
 
 HEAD
 
+o Hackersh Console Prompt can be customize via PROMPT variable. Example:
+  PROMPT='% '
+
 o Autocomplete with TAB. Examples:
   sho<TAB>
   info nm<TAB>
   "127.0.0.1" | <TAB>
+  "127.0.0.1" | ipv4_<TAB>
   and etc.
 
 o Add `show` Command (e.g. show)
