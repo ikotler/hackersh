@@ -188,6 +188,12 @@ class Component(object):
 
         retval = None
 
+        # TODO: This should be implemented in Pythonect via StopIteration-like Object
+
+        if isinstance(arg, HackershError):
+
+            return arg
+
         context = arg
 
         self.logger.debug('In __call__ with %s' % pprint.pformat(repr(context)))
@@ -208,9 +214,7 @@ class Component(object):
 
                     self.logger.debug('Filter """%s""" is False' % filter_exp)
 
-                    return False
-
-                    # raise exceptions.HackershError(context, "%s: not enough data to start" % self.__class__.__name__.lower())
+                    return HackershError("*** %s: Not enough data in context" % self.__class__.__name__.lower())
 
             self.logger.debug('Filter """%s""" is True' % filter_exp)
 
@@ -425,3 +429,12 @@ class Context(object):
         else:
 
             return object.__repr__(self)
+
+
+# TODO: This should be implemented in Pythonect via StopIteration-like Object
+
+class HackershError(object):
+
+    def __init__(self, err):
+
+        self.err = err

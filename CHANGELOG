@@ -2,6 +2,9 @@
 
 HEAD
 
+o Components can return Component-level Errors via HackershError() class.
+  Aggregation occurs at Console-level prior to printing the return value.
+
 o Hackersh Console Prompt can be customize via PROMPT variable. Example:
   PROMPT='% '
 

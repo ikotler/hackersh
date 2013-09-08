@@ -233,17 +233,29 @@ class HackershInteractiveConsole(cmd.Cmd):
 
             if return_value is not False and return_value:
 
-                # Not an empty list? Reduce!
+                if not isinstance(return_value, list):
 
-                if isinstance(return_value, list):
+                    return_value = [return_value]
 
-                    return_value = reduce(lambda x, y: x+y if isinstance(x, hackersh.components.Context) else y+x, return_value)
+                meaningful_return_value = filter(lambda x: not isinstance(x, hackersh.components.HackershError), return_value)
+
+                if meaningful_return_value:
+
+                    return_value = reduce(lambda x, y: x+y if isinstance(x, hackersh.components.Context) else y+x, meaningful_return_value)
+
+                    hackersh.components.internal.print_.print_().main([return_value], {})
+
+                else:
+
+                    for error in set([n.err for n in return_value]):
+
+                        print error
+
+                    return_value = hackersh.components.Context()
 
                 self.locals_['_'] = return_value
 
                 self.locals_['__IN_EVAL__'] = True
-
-                hackersh.components.internal.print_.print_().main([return_value], {})
 
     def print_topics(self, header, cmds, cmdlen, maxcol):
 

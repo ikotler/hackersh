@@ -142,9 +142,7 @@ class ExternalComponent(hackersh.components.Component):
 
             return self._processor(context, self._execute(path + argv, context))
 
-        raise hackersh.exceptions.HackershError(context, "%s: command not found" % filenames)
-
-        return False
+        raise Exception("*** %s: %s: command not found" % (self.__class__.__name__.lower(), filenames[0] if len(filenames) == 1 else filenames))
 
     def _processor(self, context, data):
 
@@ -246,7 +244,7 @@ class ExternalComponentStreamOutput(ExternalComponent):
 
             if not contexts:
 
-                raise hackersh.exceptions.HackershError(context, "%s: unable to parse: %s" % (self.__class__.__name__.lower(), str(data)))
+                raise Exception("*** %s: unable to parse: %s" % (self.__class__.__name__.lower(), str(data)))
 
             if isinstance(contexts, list) and len(contexts) == 1:
 
