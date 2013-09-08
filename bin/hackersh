@@ -59,6 +59,8 @@ class HackershInteractiveConsole(cmd.Cmd):
 
         self.locals_ = locals_
 
+        self.locals_['__IN_EVAL__'] = True
+
         self.histfile = locals_.get('HACKERSHHISTFILE', os.path.expanduser("~/.hackersh_history"))
 
         self.init_history()
@@ -253,9 +255,9 @@ class HackershInteractiveConsole(cmd.Cmd):
 
                     return_value = hackersh.components.Context()
 
-                self.locals_['_'] = return_value
+                hackersh.log.logger.debug('Return Value = %s' % return_value)
 
-                self.locals_['__IN_EVAL__'] = True
+                self.locals_['_'] = return_value
 
     def print_topics(self, header, cmds, cmdlen, maxcol):
 
@@ -367,6 +369,8 @@ def set_or_update_env():
 def main():
 
     locals_ = {}
+
+    locals_['_'] = hackersh.components.Context()
 
     banner = "Hackersh version %s ( http://www.hackersh.org )" % hackersh.__version__
 
