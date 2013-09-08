@@ -168,7 +168,9 @@ class Component(object):
 
                     self.logger.debug('%s == %s, Thus, return_value List will be equal: [True]' % (entry_or_entries, repr(context)))
 
-                    return_value.append(True)
+                    # TODO: Replace w/ True? Should cause Pythonect to return the "incoming" Context
+
+                    return_value = context
 
                 else:
 
