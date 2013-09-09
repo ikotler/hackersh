@@ -30,6 +30,7 @@ import hackersh.log
 
 logger = hackersh.log.logging.getLogger().getChild('eval')
 
+
 def __quotes_wrap(list):
 
     new_list = []

@@ -213,6 +213,10 @@ class HackershInteractiveConsole(cmd.Cmd):
 
             new_line = 'exit'
 
+        if new_line == 'help ?':
+
+            new_line = 'help help'
+
         return new_line
 
     def postcmd(self, stop, line):
@@ -281,27 +285,56 @@ class HackershInteractiveConsole(cmd.Cmd):
 
         return []
 
+    def help_help(self):
+        print 'Usage: help [<command>]'
+
     def do_help(self, arg):
         """Display information about builtin commands"""
 
         cmd.Cmd.do_help(self, arg)
 
+    def complete_show(self, text, line, begidx, endidx):
+
+        return filter(lambda x: x.startswith(text) or x == text, ['all', 'internal', 'external', 'root'])
+
+    def help_show(self):
+        print 'Usage: show [all|internal|external|root]'
+
     def do_show(self, arg):
-        """Displays all components"""
+        """Displays components"""
 
-        print hackersh.conio.draw_underline('Root Components', '=')
+        if arg == 'all' or not arg:
 
-        print hackersh.conio.draw_tbl_from_list(map(lambda k: [k, 'N/A' if not self.locals_[k].__doc__ else self.locals_[k].__doc__.split('.')[0]], filter(lambda x: issubclass(self.locals_[x], hackersh.components.RootComponent), self.locals_)), ["Name", "Description"], 4) + '\n'
+            for opt in self.complete_show('', '', 0, 0):
 
-        print hackersh.conio.draw_underline('Internal Components', '=')
+                # Avoid recursion
 
-        print hackersh.conio.draw_tbl_from_list(map(lambda k: [k, 'N/A' if not self.locals_[k].__doc__ else self.locals_[k].__doc__.split('.')[0]], filter(lambda x: issubclass(self.locals_[x], hackersh.components.internal.InternalComponent), self.locals_)), ["Name", "Description"], 4) + '\n'
+                if opt == 'all':
+                    continue
 
-        print hackersh.conio.draw_underline('External Components', '=')
+                self.do_show(opt)
 
-        print hackersh.conio.draw_tbl_from_list(map(lambda k: [k, 'N/A' if not self.locals_[k].__doc__ else self.locals_[k].__doc__.split('.')[0]], filter(lambda x: issubclass(self.locals_[x], hackersh.components.external.ExternalComponent), self.locals_)), ["Name", "Description"], 4) + '\n'
+        elif arg == 'root':
 
-    complete_show = no_complete
+            print hackersh.conio.draw_underline('Root Components', '=')
+
+            print hackersh.conio.draw_tbl_from_list(map(lambda k: [k, 'N/A' if not self.locals_[k].__doc__ else self.locals_[k].__doc__.split('.')[0]], filter(lambda x: issubclass(self.locals_[x], hackersh.components.RootComponent), self.locals_['__COMPONENT_NAMES__'])), ["Name", "Description"], 4) + '\n'
+
+        elif arg == 'internal':
+
+            print hackersh.conio.draw_underline('Internal Components', '=')
+
+            print hackersh.conio.draw_tbl_from_list(map(lambda k: [k, 'N/A' if not self.locals_[k].__doc__ else self.locals_[k].__doc__.split('.')[0]], filter(lambda x: issubclass(self.locals_[x], hackersh.components.internal.InternalComponent), self.locals_['__COMPONENT_NAMES__'])), ["Name", "Description"], 4) + '\n'
+
+        elif arg == 'external':
+
+            print hackersh.conio.draw_underline('External Components', '=')
+
+            print hackersh.conio.draw_tbl_from_list(map(lambda k: [k, 'N/A' if not self.locals_[k].__doc__ else self.locals_[k].__doc__.split('.')[0]], filter(lambda x: issubclass(self.locals_[x], hackersh.components.external.ExternalComponent), self.locals_['__COMPONENT_NAMES__'])), ["Name", "Description"], 4) + '\n'
+
+        else:
+
+            print "*** Invalid option: %s" % arg
 
     def complete_info(self, text, line, begidx, endidx):
 
@@ -312,6 +345,10 @@ class HackershInteractiveConsole(cmd.Cmd):
         else:
 
             return self.locals_['__COMPONENT_NAMES__'].keys()
+
+    def help_info(self):
+
+        print "Usage: info <component name>"
 
     def do_info(self, arg):
         """Queries the supplied component or components for information"""
