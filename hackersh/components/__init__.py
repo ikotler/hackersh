@@ -162,9 +162,17 @@ class Component(object):
 
                     self.logger.debug('Pushing %s = %s to return_value List' % (entry_key, entry))
 
-                    return_value.append(context.push(entry_key, entry))
+                    try:
 
-                    self.logger.debug('Pushed!')
+                        return_value.append(context.push(entry_key, entry))
+
+                        self.logger.debug('Pushed!')
+
+                    except AttributeError:
+
+                        return_value = entry
+
+                        self.logger.debug('Replaced return_value with entry')
 
                     result_id += 1
 

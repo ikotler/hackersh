@@ -233,6 +233,8 @@ class HackershInteractiveConsole(cmd.Cmd):
 
             # Empty List is not False, but Empty list is not True either
 
+            hackersh.log.logger.debug('Returning from hackersh.eval() with %s (Type: %s)' % (return_value, type(return_value)))
+
             if return_value is not False and return_value:
 
                 if not isinstance(return_value, list):

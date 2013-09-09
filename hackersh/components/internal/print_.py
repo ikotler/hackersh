@@ -38,17 +38,17 @@ class special_print(hackersh.components.internal.InternalComponent):
 
     def main(self, argv, context):
 
-        buf = data = argv or context
+        data = data = argv or context
 
         if isinstance(data, list) and len(data) == 1:
 
-            buf = data[0]
+            data = data[0]
 
         if isinstance(data, hackersh.components.Context):
 
-            buf = hackersh.conio.draw_graph_horizontal(data)
+            data = hackersh.conio.draw_graph_horizontal(data)
 
-        sys.stdout.write('\n' + str(buf).strip() + '\n\n')
+        sys.stdout.write('\n' + str(data).strip() + '\n\n')
 
         sys.stdout.flush()
 
