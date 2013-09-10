@@ -2,6 +2,14 @@
 
 HEAD
 
+o Support Multi-Line in Interactive Console via Backslash ('\'). For example:
+  show \
+   all
+  Or:
+  x = \
+  5
+  And etc.
+
 o `print` component will print a given context, while `print_all` will join
   (i.e. reduce) all contexts into a single tree and print that tree.
 

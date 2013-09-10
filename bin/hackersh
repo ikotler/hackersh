@@ -57,6 +57,8 @@ class HackershInteractiveConsole(cmd.Cmd):
 
         cmd.Cmd.__init__(self)
 
+        self.buf = ""
+
         self.locals_ = locals_
 
         self.locals_['__IN_EVAL__'] = True
@@ -66,6 +68,8 @@ class HackershInteractiveConsole(cmd.Cmd):
         self.init_history()
 
         self.prompt = locals_.get('PROMPT', '> ')
+
+        self.old_prompt = ''
 
         # Hack data members `self.doc_header', `self.misc_header', and `self.undoc_header' for Sections
 
@@ -203,9 +207,43 @@ class HackershInteractiveConsole(cmd.Cmd):
 
         return return_value
 
+    def emptyline(self):
+
+        return ''
+
     def precmd(self, line):
 
         new_line = line
+
+        # Part of Multi-Line ?
+
+        if new_line.strip().endswith('\\'):
+
+            if not self.old_prompt:
+
+                self.old_prompt = self.prompt
+
+                self.prompt = '... '
+
+            self.buf += new_line.strip()[:-1].strip()
+
+            new_line = ''
+
+        # End of Multi-Line?
+
+        elif not new_line.strip().endswith('\\') and self.buf:
+
+            # Don't .strip() to allow: "show \<ENTER><SPACE>all"
+
+            self.buf += new_line
+
+            new_line = self.buf
+
+            self.prompt = self.old_prompt
+
+            self.old_prompt = ''
+
+            self.buf = ''
 
         # Replace 'EOF' to 'exit' (i.e. do_exit() for "EOF")
 
@@ -221,7 +259,7 @@ class HackershInteractiveConsole(cmd.Cmd):
 
     def postcmd(self, stop, line):
 
-        self.prompt = self.locals_.get('PROMPT', '> ')
+        self.prompt = '... ' if self.old_prompt else self.locals_.get('PROMPT', '> ')
 
         return cmd.Cmd.postcmd(self, stop, line)
 
