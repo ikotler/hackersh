@@ -271,41 +271,51 @@ class HackershInteractiveConsole(cmd.Cmd):
 
             hackersh.log.logger.debug('Evaluating `%s`' % line)
 
-            return_value = hackersh.eval(line, self.locals_)
+            try:
 
-            # Empty List is not False, but Empty list is not True either
+                return_value = hackersh.eval(line, self.locals_)
 
-            hackersh.log.logger.debug('Returning from hackersh.eval() with %s (Type: %s)' % (return_value, type(return_value)))
+                # Empty List is not False, but Empty list is not True either
 
-            if return_value is not False and return_value:
+                hackersh.log.logger.debug('Returning from hackersh.eval() with %s (Type: %s)' % (return_value, type(return_value)))
 
-                if not isinstance(return_value, list):
+                if return_value is not False and return_value:
 
-                    return_value = [return_value]
+                    if not isinstance(return_value, list):
 
-                meaningful_return_value = filter(lambda x: not isinstance(x, hackersh.components.HackershError) and not isinstance(x, bool), return_value)
+                        return_value = [return_value]
 
-                if meaningful_return_value:
+                    meaningful_return_value = filter(lambda x: not isinstance(x, hackersh.components.HackershError) and not isinstance(x, bool), return_value)
 
-                    if len(meaningful_return_value) == 1:
+                    if meaningful_return_value:
 
-                        hackersh.components.internal.print_.special_print().main([], meaningful_return_value)
+                        if len(meaningful_return_value) == 1:
+
+                            hackersh.components.internal.print_.special_print().main([], meaningful_return_value)
+
+                        else:
+
+                            hackersh.components.internal.print_.special_print_all().main([], meaningful_return_value)
 
                     else:
 
-                        hackersh.components.internal.print_.special_print_all().main([], meaningful_return_value)
+                        for error in set([n.err for n in return_value]):
 
-                else:
+                            print error
 
-                    for error in set([n.err for n in return_value]):
+                        return_value = hackersh.components.Context()
 
-                        print error
+                    hackersh.log.logger.debug('Return Value = %s' % return_value)
 
-                    return_value = hackersh.components.Context()
+                    self.locals_['_'] = return_value
 
-                hackersh.log.logger.debug('Return Value = %s' % return_value)
+            except SystemExit:
 
-                self.locals_['_'] = return_value
+                raise
+
+            except Exception as e:
+
+                print "*** Exception: " + str(e)
 
     def print_topics(self, header, cmds, cmdlen, maxcol):
 
