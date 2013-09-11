@@ -18,11 +18,19 @@
 
 """Parse and execute Hackersh code"""
 
+# Setup Logger
+
+import logging
+
+logging.basicConfig(format="%(asctime)s %(name)s: [%(levelname)s] %(message)s", datefmt='%b %d %R:%S', level=logging.ERROR)
+
+
+# Get Version
+
 from hackersh._version import __version__
 
 
-# API
+# Export API
 
 from hackersh.components import *
-from hackersh.exceptions import *
 from hackersh.eval import eval, parse

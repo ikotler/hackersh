@@ -28,7 +28,6 @@ import select
 
 import hackersh.components
 import hackersh.miscellaneous
-import hackersh.exceptions
 
 
 #############

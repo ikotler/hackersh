@@ -24,6 +24,7 @@ import types
 import pprint
 import networkx
 import copy
+import logging
 
 
 # Hacks
@@ -34,8 +35,10 @@ import pythonect.internal._graph
 # Local imports
 
 import hackersh
-import hackersh.log
 import hackersh.miscellaneous
+
+
+_log = logging.getLogger(__name__)
 
 
 #############
@@ -94,7 +97,7 @@ def get_all_components(components_path):
 
                                 classes['__COMPONENT_NAMES__'][com_name] = True
 
-                                hackersh.log.logger.debug('Registering %s from %s as %s' % (obj, component_file, com_name.lower()))
+                                _log.debug('Registering %s from %s as %s' % (obj, component_file, com_name.lower()))
 
                         except TypeError:
 
@@ -102,7 +105,7 @@ def get_all_components(components_path):
 
             except Exception as e:
 
-                hackersh.log.logger.warn('Unable to register %s due to: %s' % (component_file, e))
+                _log.warn('Unable to register %s due to: %s' % (component_file, e))
 
                 pass
 
@@ -123,12 +126,12 @@ class Component(object):
 
         self._kwargs = kwargs
 
-        self.logger = hackersh.log.logging.getLogger(self.__class__.__name__.lower())
+        self.logger = logging.getLogger(self.__class__.__name__.lower())
 
         # Debug?
         if kwargs.get('debug', False):
 
-            self.logger.setLevel(hackersh.log.logging.DEBUG)
+            self.logger.setLevel(logging.DEBUG)
 
         self.logger.debug('Initialized %s with args = %s and kwargs = %s' % (repr(self), args, kwargs))
 
