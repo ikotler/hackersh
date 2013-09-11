@@ -20,15 +20,15 @@ import types
 import shlex
 import pythonect
 import networkx
+import logging
 
 
 # Local imports
 
 import hackersh.miscellaneous
-import hackersh.log
 
 
-logger = hackersh.log.logging.getLogger().getChild('eval')
+_log = logging.getLogger(__name__)
 
 
 def __quotes_wrap(list):
@@ -54,7 +54,7 @@ def __hackersh_preprocessor(source, sym_tbl):
 
     tokens = shlex.split(source.encode('utf8'))
 
-    logger.debug('%s tokens are: %s' % (source, tokens))
+    _log.debug('%s tokens are: %s' % (source, tokens))
 
     # e.g. nmap
 
@@ -109,11 +109,11 @@ def _hackersh_graph_transform(graph, hackersh_locals):
 
     for node in graph:
 
-        logger.debug('Before __hackersh_preprocessor, CONTENT = %s' % (graph.node[node]['CONTENT']))
+        _log.debug('Before __hackersh_preprocessor, CONTENT = %s' % (graph.node[node]['CONTENT']))
 
         graph.node[node]['CONTENT'] = __hackersh_preprocessor(graph.node[node]['CONTENT'].strip(), hackersh_locals)
 
-        logger.debug('After __hackersh_preprocessor, CONTENT = %s' % (graph.node[node]['CONTENT']))
+        _log.debug('After __hackersh_preprocessor, CONTENT = %s' % (graph.node[node]['CONTENT']))
 
     return graph
 
@@ -131,7 +131,7 @@ def __command_preprocessor(command):
 
 def parse(source):
 
-    logger.debug('Calling parse WITH %s' % (source))
+    _log.debug('Calling parse WITH %s' % (source))
 
     command_buffer = ""
     depth = 0
@@ -179,7 +179,7 @@ def eval(source, locals_):
 
     graph = None
 
-    logger.debug('In eval with SOURCE = %s (%s)' % (source, repr(source)))
+    _log.debug('In eval with SOURCE = %s (%s)' % (source, repr(source)))
 
     if source != "pass":
 

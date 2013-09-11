@@ -29,6 +29,7 @@ import atexit
 import textwrap
 import shlex
 import itertools
+import logging
 
 
 try:
@@ -46,7 +47,9 @@ import hackersh
 import hackersh.components
 import hackersh.components.internal.print_
 import hackersh.conio
-import hackersh.log
+
+
+_log = logging.getLogger('shell')
 
 
 # Hackersh Console
@@ -85,7 +88,7 @@ class HackershInteractiveConsole(cmd.Cmd):
 
         except IOError, e:
 
-            hackersh.log.logger.warn('Reading history file %s failed due to %s' % (self.histfile, e))
+            _log.warn('Reading history file %s failed due to %s' % (self.histfile, e))
 
             # No history file
 
@@ -269,7 +272,7 @@ class HackershInteractiveConsole(cmd.Cmd):
 
             # REPL (Read-eval-print loop)
 
-            hackersh.log.logger.debug('Evaluating `%s`' % line)
+            _log.debug('Evaluating `%s`' % line)
 
             try:
 
@@ -277,7 +280,7 @@ class HackershInteractiveConsole(cmd.Cmd):
 
                 # Empty List is not False, but Empty list is not True either
 
-                hackersh.log.logger.debug('Returning from hackersh.eval() with %s (Type: %s)' % (return_value, type(return_value)))
+                _log.debug('Returning from hackersh.eval() with %s (Type: %s)' % (return_value, type(return_value)))
 
                 if return_value is not False and return_value:
 
@@ -305,7 +308,7 @@ class HackershInteractiveConsole(cmd.Cmd):
 
                         return_value = hackersh.components.Context()
 
-                    hackersh.log.logger.debug('Return Value = %s' % return_value)
+                    _log.debug('Return Value = %s' % return_value)
 
                     self.locals_['_'] = return_value
 
@@ -487,7 +490,11 @@ def main(argv=sys.argv):
 
     if args.verbose:
 
-        hackersh.log.logging.getLogger().setLevel(hackersh.log.logging.ERROR - ((args.verbose % 4) * 10))
+        logging.getLogger('hackersh').setLevel({1: logging.WARNING, 2: logging.INFO, 3: logging.DEBUG}.get(args.verbose, logging.DEBUG))
+
+        if args.verbose > 3:
+
+            logging.getLogger().setLevel(logging.DEBUG)
 
     # Argument Passing
 
@@ -505,7 +512,7 @@ def main(argv=sys.argv):
 
     if not components:
 
-        hackersh.log.logger.warn('No components were found!')
+        _log.warn('No components were found!')
 
     else:
 
