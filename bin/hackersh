@@ -292,13 +292,15 @@ class HackershInteractiveConsole(cmd.Cmd):
 
                     if meaningful_return_value:
 
-                        if len(meaningful_return_value) == 1:
+                        contexts = filter(lambda x: isinstance(x, hackersh.components.Context), meaningful_return_value)
 
-                            hackersh.components.internal.print_.special_print().main([], meaningful_return_value)
+                        if len(meaningful_return_value) > 1 and contexts and contexts == meaningful_return_value:
+
+                            hackersh.components.internal.print_.special_print_all().main([], contexts)
 
                         else:
 
-                            hackersh.components.internal.print_.special_print_all().main([], meaningful_return_value)
+                            hackersh.components.internal.print_.special_print().main([], meaningful_return_value)
 
                     else:
 
@@ -308,9 +310,14 @@ class HackershInteractiveConsole(cmd.Cmd):
 
                         return_value = hackersh.components.Context()
 
-                    _log.debug('Return Value = %s' % return_value)
+                    if isinstance(return_value, (list, tuple)) and len(return_value) == 1:
+
+                        return_value = return_value[0]
 
                     self.locals_['_'] = return_value
+
+                    _log.debug('Return Value = %s' % self.locals_['_'])
+
 
             except SystemExit:
 
@@ -318,7 +325,7 @@ class HackershInteractiveConsole(cmd.Cmd):
 
             except Exception as e:
 
-                print "*** Exception: " + str(e)
+                _log.exception("*** Exception:")
 
     def print_topics(self, header, cmds, cmdlen, maxcol):
 
