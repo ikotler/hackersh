@@ -296,7 +296,7 @@ class HackershInteractiveConsole(cmd.Cmd):
 
                         if len(meaningful_return_value) > 1 and contexts and contexts == meaningful_return_value:
 
-                            hackersh.components.internal.print_.special_print_all().main([], contexts)
+                            return_value = hackersh.components.internal.print_.special_print_all().main([], contexts)
 
                         else:
 

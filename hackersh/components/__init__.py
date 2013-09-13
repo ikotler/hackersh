@@ -357,7 +357,9 @@ class RootComponent(Component):
 
 class Context(object):
 
-    def __init__(self, graph=None, root_name=None, root_value={}):
+    def __init__(self, graph=None, root_name=None, root_value={}, composed=False):
+
+        self._composed = composed
 
         if graph is None:
 
@@ -435,11 +437,15 @@ class Context(object):
 
         # TODO: Adjust self.graph['prefix'] ?
 
+    def is_mereged(self):
+
+        return self._composed
+
     def __add__(self, other):
 
         if other:
 
-            return Context(networkx.compose(other._graph, self._graph))
+            return Context(networkx.compose(other._graph, self._graph), composed=True)
 
         else:
 

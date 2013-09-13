@@ -38,6 +38,8 @@ class special_print(hackersh.components.internal.InternalComponent):
 
     def main(self, argv, context):
 
+        _ctx_graph = None
+
         data = data = argv or context
 
         if isinstance(data, list) and len(data) == 1:
@@ -46,9 +48,21 @@ class special_print(hackersh.components.internal.InternalComponent):
 
         if isinstance(data, hackersh.components.Context):
 
-            data = hackersh.conio.draw_graph_horizontal(data)
+            _ctx_graph = data.as_graph()
 
-        sys.stdout.write('\n' + str(data).strip() + '\n\n')
+            # Single Selection (i.e. A -> B -> C, as oppose to A -> [B,C] -> D) ?
+
+            if data.is_mereged() and not all(map(lambda x: (len(_ctx_graph.successors(x)) + len(_ctx_graph.predecessors(x))) <= 2, _ctx_graph.nodes())):
+
+                root_node = [node for node, degree in _ctx_graph.in_degree().items() if degree == 0]
+
+                data = '\n'.join(hackersh.conio.draw_graph_vertical(data.as_graph(), root_node[0]))
+
+            else:
+
+                data = hackersh.conio.draw_graph_horizontal(data)
+
+        sys.stdout.write(('\n' if _ctx_graph else '') + str(data).strip() + '\n' + ('\n' if _ctx_graph else ''))
 
         sys.stdout.flush()
 
