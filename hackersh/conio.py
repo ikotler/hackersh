@@ -213,9 +213,17 @@ def draw_graph_vertical(graph, node):
             draw_tbl_from_dict(graph.node[node]['VULNERABILITIES'], ["VULNERABILITY DESCRIPTION", "URL"], ["DESCRIPTION", "DESTINATION"]) + '\n'
         )
 
-    last = graph.successors(node)[-1] if graph.successors(node) else None
+    successors = graph.successors(node)
 
-    for sucessor_node in graph.successors(node):
+    # All nodes are result (i.e. nmap_result_#0, nmap_result_#1, ...)? Sort it!
+
+    if not filter(lambda x: x.find('_#') == -1, successors):
+
+        successors = sorted(successors)
+
+    last = successors[-1] if successors else None
+
+    for sucessor_node in successors:
 
         prefix = '`-' if sucessor_node is last else '+-'
 
