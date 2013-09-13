@@ -181,27 +181,33 @@ def draw_graph_vertical(graph, node):
 
         node_name = 'str'
 
-    # TODO: This should not be hardcoded, to be replaced with flexiable, user-defined, in runtime API.
+    if not node_name.startswith('envp'):
 
-    try:
-
-        lines.append(graph.node[node]['URL'])
-
-    except KeyError:
+        # TODO: This should not be hardcoded, to be replaced with flexiable, user-defined, in runtime API.
 
         try:
 
-            lines.append(graph.node[node]['PORT'] + '/' + graph.node[node]['PROTO'].lower() + ' (' + graph.node[node].get('SERVICE', '?').upper() + ')')
+            lines.append(graph.node[node]['URL'])
 
         except KeyError:
 
             try:
 
-                lines.append(str('Found #' + str(len(graph.node[node]['VULNERABILITIES'])) + ' Vulnerabilities'))
+                lines.append(graph.node[node]['PORT'] + '/' + graph.node[node]['PROTO'].lower() + ' (' + graph.node[node].get('SERVICE', '?').upper() + ')')
 
             except KeyError:
 
-                lines.append(('"' if node_name == 'const' else '') + str(graph.node[node].values()[0]) + ('"' if node_name == 'const' else ''))
+                try:
+
+                    lines.append(str('Found #' + str(len(graph.node[node]['VULNERABILITIES'])) + ' Vulnerabilities'))
+
+                except KeyError:
+
+                    lines.append(('"' if node_name == 'const' else '') + str(graph.node[node].values()[0]) + ('"' if node_name == 'const' else ''))
+
+    else:
+
+        lines.append('*')
 
     lines[-1] = lines[-1] + ' <via ' + node_name + '>'
 

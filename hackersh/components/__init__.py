@@ -171,7 +171,9 @@ class Component(object):
 
                         self.logger.debug('Pushed!')
 
-                    except AttributeError:
+                    except Exception as e:
+
+                        _log.debug("return_value.append(context.push(entry_key, entry)) raised Exception", exc_info=1)
 
                         return_value = entry
 
@@ -207,9 +209,9 @@ class Component(object):
 
                     # i.e "127.0.0.1" | ipv4_address | nmap | print_all => AttributeError: 'list' object has no attribute 'push'
 
-                    except AttributeError:
+                    except Exception as e:
 
-                        # Result of reducing-component
+                        _log.debug('return_value = context.push(base_keyname, entry_or_entries) raised Exception', exc_info=1)
 
                         return_value = entry_or_entries
 
@@ -357,7 +359,9 @@ class RootComponent(Component):
 
 class Context(object):
 
-    def __init__(self, graph=None, root_name=None, root_value={}, composed=False):
+    def __init__(self, graph=None, root_name=None, root_value={}, composed=False, environ={}):
+
+        self._environ = environ
 
         self._composed = composed
 
@@ -403,11 +407,19 @@ class Context(object):
 
         return_value = False
 
+        secondary_lookup = True
+
         for node in self._graph.nodes():
 
             if key in self._graph.node[node]:
 
                 return_value = self._graph.node[node][key]
+
+                secondary_lookup = False
+
+        if secondary_lookup:
+
+            return_value = self._environ.get(key, False)
 
         return return_value
 
@@ -420,6 +432,14 @@ class Context(object):
         # Copy-on-Write
 
         new_ctx = self._copy()
+
+        # Started from ENVP (i.e. IPV4_ADDRESS="127.0.0.1" | ./bin/hackersh -c "_ | nmap") ?
+
+        if not new_ctx._graph.graph.get('prefix', False):
+
+            new_ctx._graph.graph['prefix'] = 'envp.'
+
+            new_ctx._graph.add_node('envp', value)
 
         new_ctx._graph = new_ctx._graph.copy()
 

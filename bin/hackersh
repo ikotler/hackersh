@@ -473,7 +473,7 @@ def main(argv=sys.argv):
 
     locals_ = {}
 
-    locals_['_'] = hackersh.components.Context()
+    locals_['_'] = hackersh.components.Context(environ=os.environ)
 
     # Parse command-line arguments
 
@@ -557,7 +557,7 @@ def main(argv=sys.argv):
 
         args.interactive = True
 
-    # Interactive-mode (i.e. ./pythonect)
+    # Interactive-mode (i.e. ./hackersh)
 
     if args.interactive:
 

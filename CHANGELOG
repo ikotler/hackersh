@@ -2,6 +2,9 @@
 
 HEAD
 
+o Hackersh loads Environment Variables on Load. For example:
+  IPV4_ADDRESS="127.0.0.1" ./bin/hackersh -c '_ | nmap | print_all'
+
 o Support Multi-Line in Interactive Console via Backslash ('\'). For example:
   show \
    all
