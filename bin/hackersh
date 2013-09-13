@@ -300,7 +300,7 @@ class HackershInteractiveConsole(cmd.Cmd):
 
                         else:
 
-                            hackersh.components.internal.print_.special_print().main([], meaningful_return_value)
+                            return_value = hackersh.components.internal.print_.special_print().main([], meaningful_return_value)
 
                     else:
 
