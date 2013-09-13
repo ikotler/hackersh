@@ -25,7 +25,7 @@ import hackersh.components.parsers
 # Metadata
 
 __author__ = "Itzik Kotler <xorninja@gmail.com>"
-__version__ = "0.1.1"
+__version__ = "0.1.0"
 
 
 # Implementation
