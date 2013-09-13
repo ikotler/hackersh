@@ -224,8 +224,6 @@ class W3af(hackersh.components.external.ExternalComponentFileOutput):
                 "back"
             ])
 
-            pass
-
         script_content.extend([
             "plugins",
             "grep all, !pathDisclosure"

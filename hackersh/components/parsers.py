@@ -34,7 +34,7 @@ class OutputHandler:
 
         self._output = output
 
-    def parse(self):
+    def parse(self, data):
 
         raise NotImplementedError
 
@@ -58,10 +58,10 @@ class SimpleRegExHandler(OutputHandler):
 
 class StdoutOutputHandler(OutputHandler):
 
-    def startDocument():
+    def startDocument(self):
         pass
 
-    def endDocument():
+    def endDocument(self):
         pass
 
     def parse(self, data):

@@ -107,8 +107,6 @@ def get_all_components(components_path):
 
                 _log.warn('Unable to register %s due to: %s' % (component_file, e))
 
-                pass
-
     return classes
 
 
@@ -171,7 +169,7 @@ class Component(object):
 
                         self.logger.debug('Pushed!')
 
-                    except Exception as e:
+                    except Exception:
 
                         _log.debug("return_value.append(context.push(entry_key, entry)) raised Exception", exc_info=1)
 
@@ -209,7 +207,7 @@ class Component(object):
 
                     # i.e "127.0.0.1" | ipv4_address | nmap | print_all => AttributeError: 'list' object has no attribute 'push'
 
-                    except Exception as e:
+                    except Exception:
 
                         _log.debug('return_value = context.push(base_keyname, entry_or_entries) raised Exception', exc_info=1)
 
