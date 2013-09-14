@@ -56,11 +56,23 @@ def __hackersh_preprocessor(source, sym_tbl):
 
     _log.debug('%s tokens are: %s' % (source, tokens))
 
+    # FIX: shlex.split("write_all('/tmp/x.dot')") = ['write_all(/tmp/x.dot) => ['write_all', '/tmp/x.dot']
+
+    if len(tokens) == 1 and tokens[0].find('(') != -1:
+
+        tokens = shlex.split(tokens[0].replace('(', ' ').replace(')',' '))
+
+        _log.debug("Trying to split again, this time without '(') and ')'")
+
+        _log.debug('%s tokens are: %s' % (source, tokens))
+
     # e.g. nmap
 
     if not tokens[0].startswith('_') and tokens[0] in sym_tbl and isinstance(sym_tbl[tokens[0]], (type, types.ClassType)) and issubclass(sym_tbl[tokens[0]], hackersh.Component):
 
         cls_name = tokens[0]
+
+        _log.debug('cls_name = %s' % cls_name)
 
         # Alias?
 
@@ -68,11 +80,23 @@ def __hackersh_preprocessor(source, sym_tbl):
 
             cls_name = 'alias_' + sym_tbl[tokens[0]].__name__.lower()
 
+            _log.debug('Is Alias! New cls_name = %s' % cls_name)
+
         # i.e. nmap -sS -P0
 
         if len(tokens) > 1:
 
-            source = "%s('%s')" % (cls_name, ' '.join(tokens[1:]))
+            # Reduce?
+
+            if cls_name.endswith('_all'):
+
+                _log.debug('%s is a (complex case of) Reduce Component!' % cls_name)
+
+                source = "%s('%s', context=_!)" % (cls_name, ' '.join(tokens[1:]))
+
+            else:
+
+                source = "%s('%s')" % (cls_name, ' '.join(tokens[1:]))
 
         # i.e. nmap
 
@@ -85,6 +109,8 @@ def __hackersh_preprocessor(source, sym_tbl):
             if cls_name.endswith('_all'):
 
                 source += '(_!)'
+
+                _log.debug('%s is a (simple case of) Reduce Component!' % cls_name)
 
     # i.e. /usr/bin/nmap or ./nmap
 

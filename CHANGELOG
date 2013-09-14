@@ -2,6 +2,9 @@
 
 HEAD
 
+o Add Components: `write`, `write_all`, and `read` to Write/Read Contexts.
+  For more info see: `info write`, `info write_all`, and `info read`
+
 o Hackersh loads Environment Variables on Load. For example:
   IPV4_ADDRESS="127.0.0.1" ./bin/hackersh -c '_ | nmap | print_all'
 
