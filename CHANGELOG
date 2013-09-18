@@ -2,6 +2,9 @@
 
 HEAD
 
+o Introduce `regex_expand` - new internal component for inverting Regular Expressions.
+  Example: "http://localhost/index[0-9]\.html" -> regex_expand -> url
+
 o Root Components can be piped via __STDIN__ key in Context
 
 o Add Components: `write`, `write_all`, and `read` to Write/Read Contexts.
