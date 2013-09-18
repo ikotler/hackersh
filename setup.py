@@ -53,7 +53,7 @@ def _safe_get_version():
 
 if __name__ == "__main__":
 
-    dependencies = ['pythonect>=0.6.0', 'networkx>=1.7', 'prettytable>=0.6.1', 'netaddr>=0.7.10']
+    dependencies = ['pythonect>=0.6.0', 'networkx>=1.7', 'prettytable>=0.6.1', 'netaddr>=0.7.10', 'pyparsing<=1.5.7']
 
     major, minor = sys.version_info[:2]
 

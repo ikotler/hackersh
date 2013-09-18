@@ -543,7 +543,17 @@ def main(argv=sys.argv):
 
             parsers = pythonect.internal.parsers.get_parsers(os.path.abspath(os.path.join(os.path.dirname(pythonect.internal.parsers.__file__), '..', 'parsers')))
 
-            content = parsers[scriptextension[1:]].parse(content)
+            try:
+
+                parser = parsers[scriptextension[1:]]
+
+            except KeyError:
+
+                parser = parsers['p2y']
+
+                _log.debug('No parser found for extension => *%s using *.p2y parser instead' % scriptextension)
+
+            content = parser.parse(content)
 
             if content is None:
 
