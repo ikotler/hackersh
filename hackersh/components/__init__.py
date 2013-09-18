@@ -330,11 +330,23 @@ class RootComponent(Component):
 
     def __call__(self, arg):
 
-        argv = list(self._args) or [arg]
+        if isinstance(arg, hackersh.components.Context):
 
-        context = Context(root_name=arg.__class__.__name__ + '_' + str(arg).encode('base64').strip(), root_value={'NAME': str(arg)})
+            context = arg
 
-        self.logger.debug('New context = %s ; root = %s' % (repr(context), context._graph.graph['prefix'][:-1]))
+            self.logger.debug('In Root Component with Context = %s' % context)
+
+            argv = [arg['__STDIN__'].encode('utf-8')]
+
+            self.logger.debug('Using __STDIN__ as argv!')
+
+        else:
+
+            argv = list(self._args) or [arg]
+
+            context = Context(root_name=arg.__class__.__name__ + '_' + str(arg).encode('base64').strip(), root_value={'NAME': str(arg)})
+
+            self.logger.debug('New context = %s ; root = %s' % (repr(context), context._graph.graph['prefix'][:-1]))
 
         self.logger.debug('In __call__ with %s' % pprint.pformat(repr(context)))
 
