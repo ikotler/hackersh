@@ -330,17 +330,29 @@ class RootComponent(Component):
 
     def __call__(self, arg):
 
+        # Pipe another Root Component?
+
         if isinstance(arg, hackersh.components.Context):
 
             context = arg
 
             self.logger.debug('In Root Component with Context = %s' % context)
 
-            argv = [arg['__STDIN__'].encode('utf-8')]
+            if arg['__STDIN__']:
 
-            self.logger.debug('Using __STDIN__ as argv!')
+                argv = [arg['__STDIN__'].encode('utf-8')]
+
+                self.logger.debug('Using __STDIN__ as argv!')
+
+            else:
+
+                argv = []
+
+                self.logger.debug('argv is Empty! (i.e. [])')
 
         else:
+
+            # Primitive data type (i.e. str) to Root Component
 
             argv = list(self._args) or [arg]
 

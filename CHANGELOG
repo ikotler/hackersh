@@ -2,6 +2,9 @@
 
 HEAD
 
+o Introduce `clipboard` - new internal component for pasting text from Clipboard.
+  Example: (Copy a URL) and then `clipboard | url | w3af`
+
 o Introduce `regex_expand` - new internal component for inverting Regular Expressions.
   Example: "http://localhost/index[0-9]\.html" -> regex_expand -> url
 
