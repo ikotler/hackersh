@@ -406,7 +406,7 @@ class HackershInteractiveConsole(cmd.Cmd):
 
     def help_info(self):
 
-        print "Usage: info <component name>"
+        print "Usage: info <component name> [<component name> ...]"
 
     def do_info(self, arg):
         """Queries the supplied component or components for information"""
