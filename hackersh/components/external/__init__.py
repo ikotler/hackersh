@@ -103,11 +103,53 @@ class ExternalComponent(hackersh.components.Component):
 
         self.DEFAULT_STDIN_BUFFER = None
 
+    def __usage_execute(self, argv, context):
+
+        usage_cmdline_opt = self._kwargs.get('usage_option', None)
+
+        if usage_cmdline_opt is None:
+
+            if hasattr(self, 'DEFAULT_USAGE_OPTION'):
+
+                usage_cmdline_opt = self.DEFAULT_USAGE_OPTION
+
+                if usage_cmdline_opt is None:
+
+                    return None
+
+            else:
+
+                usage_cmdline_opt = '--help'
+
+        cmd = argv[0] + ' ' + usage_cmdline_opt
+
+        self.logger.debug('Shell Command for Usage = ' + cmd)
+
+        p = subprocess.Popen(hackersh.miscellaneous.shell_split(cmd), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+        (usage_output, prog_stderr) = p.communicate()
+
+        usage_output += prog_stderr
+
+        if usage_output is None:
+
+            return None
+
+        return '# $ ' + cmd + '\n' + usage_output
+
+    def _usage_as_str(self):
+
+        return self._try_binary([], {}, processor_fcn=lambda x, y: y, execute_fcn=self.__usage_execute)
+
     def _execute(self, argv, context):
 
         raise NotImplementedError
 
     def main(self, argv, context):
+
+        return self._try_binary(argv, context, self._processor, self._execute)
+
+    def _try_binary(self, argv, context, processor_fcn, execute_fcn):
 
         filenames = []
 
@@ -139,7 +181,7 @@ class ExternalComponent(hackersh.components.Component):
 
             self.logger.debug('External Application Path = ' + path[0])
 
-            return self._processor(context, self._execute(path + argv, context))
+            return processor_fcn(context, execute_fcn(path + argv, context))
 
         raise Exception("*** %s: %s: command not found" % (self.__class__.__name__.lower(), filenames[0] if len(filenames) == 1 else filenames))
 

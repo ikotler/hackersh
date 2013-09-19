@@ -49,3 +49,5 @@ class Ping(hackersh.components.external.ExternalComponentReturnValueOutput):
     DEFAULT_OUTPUT_OPTIONS = "-c 3"
 
     DEFAULT_QUERY = DEFAULT_FILTER = "IPV4_ADDRESS or HOSTNAME"
+
+    DEFAULT_USAGE_OPTION = ' '

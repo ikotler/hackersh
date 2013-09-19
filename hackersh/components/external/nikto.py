@@ -91,3 +91,5 @@ class Nikto(hackersh.components.external.ExternalComponentFileOutput):
 
     DEFAULT_QUERY = \
         "'-host ' + (IPV4_ADDRESS or HOSTNAME) + ' -port ' + PORT"
+
+    DEFAULT_USAGE_OPTION = '-H'

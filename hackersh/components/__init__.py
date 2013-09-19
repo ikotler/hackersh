@@ -235,6 +235,28 @@ class Component(object):
 
             return arg
 
+        # TODO : This needs to be moved into Console().precmd()? It's purely for Console usage.
+
+        if self._args and self._args[0] in ['-h', '--help'] and isinstance(arg, hackersh.components.Context):
+
+            txt = None
+
+            self.logger.debug('In usage Mode!')
+
+            if hasattr(self, '_usage_as_str'):
+
+                txt = self._usage_as_str()
+
+            if txt is None:
+
+                return HackershError("*** No usage information for %s" % self.__class__.__name__.lower())
+
+            else:
+
+                print txt.replace('\n', '\n# ')
+
+                return HackershNOP()
+
         context = arg
 
         self.logger.debug('In __call__ with %s' % pprint.pformat(repr(context)))
@@ -329,6 +351,18 @@ class Component(object):
 class RootComponent(Component):
 
     def __call__(self, arg):
+
+        # TODO : This needs to be moved into Console().precmd()? It's purely for Console usage.
+
+        if self._args and self._args[0] in ['-h', '--help']:
+
+            if hasattr(self, '_usage_as_str'):
+
+                return self._usage_as_str()
+
+            else:
+
+                return HackershError("*** No usage information for %s" % self.__class__.__name__.lower())
 
         # Pipe another Root Component?
 
@@ -537,3 +571,8 @@ class HackershError(object):
     def __init__(self, err):
 
         self.err = err
+
+
+class HackershNOP(object):
+
+    pass

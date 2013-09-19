@@ -60,7 +60,7 @@ def __hackersh_preprocessor(source, sym_tbl):
 
     if len(tokens) == 1 and tokens[0].find('(') != -1:
 
-        tokens = shlex.split(tokens[0].replace('(', ' ').replace(')',' '))
+        tokens = shlex.split(tokens[0].replace('(', ' ').replace(')', ' '))
 
         _log.debug("Trying to split again, this time without '(') and ')'")
 

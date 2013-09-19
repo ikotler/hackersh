@@ -71,3 +71,5 @@ class NbtScan(hackersh.components.external.ExternalComponentStdoutOutput):
     DEFAULT_OUTPUT_OPTIONS = "-v -h -q -s ,"
 
     DEFAULT_FILTER = DEFAULT_QUERY = "IPV4_ADDRESS"
+
+    DEFAULT_USAGE_OPTION = ' '

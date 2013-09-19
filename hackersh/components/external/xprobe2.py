@@ -97,3 +97,5 @@ class Xprobe2(hackersh.components.external.ExternalComponentFileOutput):
     DEFAULT_OUTPUT_OPTIONS = "-X -o"
 
     DEFAULT_QUERY = DEFAULT_FILTER = "IPV4_ADDRESS or HOSTNAME"
+
+    DEFAULT_USAGE_OPTION = ' '

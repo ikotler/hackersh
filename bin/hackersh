@@ -258,6 +258,14 @@ class HackershInteractiveConsole(cmd.Cmd):
 
             new_line = 'help help'
 
+        if new_line.strip().endswith('-h') or new_line.strip().endswith('--help'):
+
+            cmd = new_line.split()[0]
+
+            if hasattr(self, 'do_' + cmd):
+
+                new_line = 'help %s' % new_line.split()[0]
+
         return new_line
 
     def postcmd(self, stop, line):
@@ -282,7 +290,7 @@ class HackershInteractiveConsole(cmd.Cmd):
 
                 _log.debug('Returning from hackersh.eval() with %s (Type: %s)' % (return_value, type(return_value)))
 
-                if return_value is not False and return_value:
+                if return_value is not False and not isinstance(return_value, hackersh.components.HackershNOP) and return_value:
 
                     if not isinstance(return_value, list):
 
@@ -323,7 +331,7 @@ class HackershInteractiveConsole(cmd.Cmd):
 
                 raise
 
-            except Exception as e:
+            except Exception:
 
                 _log.exception("*** Exception:")
 
