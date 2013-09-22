@@ -331,6 +331,10 @@ class HackershInteractiveConsole(cmd.Cmd):
 
                 raise
 
+            except ImportError as e:
+
+                print "*** Unknown command, component, or Python function: %s" % str(e)[len('No module named')+1:]
+
             except Exception:
 
                 _log.exception("*** Exception:")
