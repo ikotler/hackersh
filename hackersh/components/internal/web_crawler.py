@@ -16,10 +16,14 @@
 # along with Hackersh; see the file COPYING.  If not,
 # see <http://www.gnu.org/licenses/>.
 
+import mechanize
+
+
 # Local imports
 
 import hackersh.components.internal
 import hackersh.components.internal.url
+import hackersh.components.internal.browse
 
 
 # Metadata
@@ -30,18 +34,47 @@ __version__ = "0.1.0"
 
 # Implementation
 
-class Iterate_Links(hackersh.components.internal.InternalComponent):
+class Web_Crawler(hackersh.components.internal.InternalComponent):
+    "Return a List of hyperlinks in a given Website"
 
     def main(self, argv, context):
 
         contexts = []
 
-        br = argv[0]
+        br = mechanize.Browser()
+
+        (br, ignored) = hackersh.components.internal.browse._init_br(br, context)
+
+        br.open(argv[0])
 
         for link in br.links():
+
+            if self._kwargs.get('forward', False):
+
+                if not link.absolute_url.startswith(argv[0]):
+
+                    continue
+
+            # Duplicate
+
+            if link.absolute_url == argv[0] or link.absolute_url == argv[0] + '/':
+
+                continue
 
             contexts.append(hackersh.components.internal.url.URL().main([link.absolute_url], {}))
 
         return contexts
 
-    DEFAULT_FILTER = DEFAULT_QUERY = "BR_OBJECT"
+    DEFAULT_FILTER = \
+        "(" \
+        " (SERVICE == 'HTTP' or SERVICE == 'HTTPS') and " \
+        " (IPV4_ADDRESS or HOSTNAME) and " \
+        " PROTO == 'TCP'" \
+        ")" \
+        "or" \
+        "(" \
+        " URL" \
+        ")"
+
+    DEFAULT_QUERY = \
+        "URL or (SERVICE.lower() + '://' + (IPV4_ADDRESS or HOSTNAME) + ':' + PORT)"

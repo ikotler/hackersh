@@ -48,6 +48,43 @@ class _MozillaCookieJarAsCommandLineArgument(cookielib.MozillaCookieJar):
         return '"' + cookies_arg + '"'
 
 
+def _init_br(br, context):
+
+    cj = _MozillaCookieJarAsCommandLineArgument()
+
+    already_existing_cj = context['COOKIES']
+
+    # Duplicate Jar
+
+    if already_existing_cj:
+
+        tmp_cj_file = tempfile.NamedTemporaryFile()
+
+        already_existing_cj.save(tmp_cj_file.name, True, True)
+
+        tmp_cj_file.flush()
+
+        os.fsync(tmp_cj_file.fileno())
+
+        cj.load(tmp_cj_file.name, True, True)
+
+    br.set_cookiejar(cj)
+
+    # Browser Options
+
+    br.set_handle_equiv(True)
+    br.set_handle_redirect(True)
+    br.set_handle_referer(True)
+    br.set_handle_robots(False)
+    br.set_handle_refresh(mechanize._http.HTTPRefreshProcessor(), max_time=1)
+
+    if context['USER-AGENT']:
+
+        br.addheaders = [('User-agent', context['USER-AGENT'])]
+
+    return br, cj
+
+
 class Browse(hackersh.components.internal.InternalComponent):
 
     def main(self, argv, context):
@@ -58,33 +95,7 @@ class Browse(hackersh.components.internal.InternalComponent):
 
         br = mechanize.Browser()
 
-        cj = _MozillaCookieJarAsCommandLineArgument()
-
-        already_existing_cj = context['COOKIES']
-
-        # Duplicate Jar
-
-        if already_existing_cj:
-
-            tmp_cj_file = tempfile.NamedTemporaryFile()
-
-            already_existing_cj.save(tmp_cj_file.name, True, True)
-
-            tmp_cj_file.flush()
-
-            os.fsync(tmp_cj_file.fileno())
-
-            cj.load(tmp_cj_file.name, True, True)
-
-        br.set_cookiejar(cj)
-
-        # Browser Options
-
-        br.set_handle_equiv(True)
-        br.set_handle_redirect(True)
-        br.set_handle_referer(True)
-        br.set_handle_robots(False)
-        br.set_handle_refresh(mechanize._http.HTTPRefreshProcessor(), max_time=1)
+        (br, cj) = _init_br(br, context)
 
         if self._kwargs.get('ua', False):
 
@@ -102,7 +113,7 @@ class Browse(hackersh.components.internal.InternalComponent):
 
             print response.read()
 
-        return dict({'BR_OBJECT': br, 'URL': url, 'COOKIES': cj})
+        return dict({'URL': url, 'COOKIES': cj})
 
     DEFAULT_FILTER = \
         "(" \

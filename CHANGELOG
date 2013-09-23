@@ -2,7 +2,10 @@
 
 HEAD
 
-o All objects (i.e. builtin shell commands and all types of components) will
+o Rename "iterate_links" to "web_crawler". For example:
+  "http://localhost" -> url -> web_crawler -> ...
+
+o All builtin shell commands and external components will
   display usage if `-h` or `--help` command line is passed. Example: nmap -h
 
 o Introduce `clipboard` - new internal component for pasting text from Clipboard.
