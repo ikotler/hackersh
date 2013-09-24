@@ -559,19 +559,23 @@ def main(argv=sys.argv):
 
                 parser = parsers[scriptextension[1:]]
 
+                hackersh.eval(content, locals_)
+
+                if content is None:
+
+                    raise Exception("Unable to parse %s with %s" % (scriptname, parsers[scriptextension].__repr__()))
+
             except KeyError:
 
-                parser = parsers['p2y']
+                _log.debug('No parser found for extension => *%s using Hackersh Console parser instead' % scriptextension)
 
-                _log.debug('No parser found for extension => *%s using *.p2y parser instead' % scriptextension)
+                for line in content.splitlines():
 
-            content = parser.parse(content)
+                    if line.startswith('#') or len(line) == 0:
 
-            if content is None:
+                        continue
 
-                raise Exception("Unable to parse %s with %s" % (scriptname, parsers[scriptextension].__repr__()))
-
-        hackersh.eval(content, locals_)
+                    hackersh.eval(line, locals_)
 
         args.script.close()
 
