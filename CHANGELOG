@@ -2,6 +2,9 @@
 
 HEAD
 
+o Delete internal component "submit" for now. It will be back in the future,
+  together with a nice set of HTTP components.
+
 o Rename "iterate_links" to "web_crawler". For example:
   "http://localhost" -> url -> web_crawler -> ...
 
