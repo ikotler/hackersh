@@ -86,6 +86,7 @@ def _init_br(br, context):
 
 
 class Browse(hackersh.components.internal.InternalComponent):
+    """Browse a Web Page. This component uses the mechanize module"""
 
     def main(self, argv, context):
 

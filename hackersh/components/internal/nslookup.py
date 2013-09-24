@@ -34,7 +34,7 @@ __version__ = "0.1.0"
 # Implementation
 
 class Nslookup(hackersh.components.RootComponent):
-    """Convert IP Address for a Host or a Host for an IP Address"""
+    """Convert IP Address for a Host or a Host for an IP Address. This component uses the socket module available on the Python Standard Library to lookup hostname or IPv4 address"""
 
     def main(self, argv, context):
 

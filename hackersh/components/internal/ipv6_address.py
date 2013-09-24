@@ -33,7 +33,7 @@ __version__ = "0.1.0"
 # Implementation
 
 class IPv6_Address(hackersh.components.RootComponent):
-    """Convert String to IPv6 Address"""
+    """Convert String to IPv6 Address. This component uses the socket module available on the Python Standard Library to validate IPv6 address"""
 
     def main(self, argv, context):
 

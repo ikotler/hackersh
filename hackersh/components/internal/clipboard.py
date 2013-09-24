@@ -32,7 +32,7 @@ __version__ = "0.1.0"
 # Implementation
 
 class Clipboard(hackersh.components.RootComponent):
-    """Paste String from Clipboard"""
+    """Paste String from Clipboard. This component uses the xerox module"""
 
     def main(self, argv, context):
 

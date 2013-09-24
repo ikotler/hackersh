@@ -33,7 +33,7 @@ __version__ = "0.1.0"
 # Implementation
 
 class Hostname(hackersh.components.RootComponent):
-    """Convert String to Hostname"""
+    """Convert String to Hostname. This component uses the socket module available on the Python Standard Library to validate hostname (i.e. gethostbyname)"""
 
     def main(self, argv, context):
 

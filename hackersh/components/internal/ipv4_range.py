@@ -33,7 +33,7 @@ __version__ = "0.1.0"
 # Implementation
 
 class IPv4_Range(hackersh.components.RootComponent):
-    """Convert String to IPv4 Address Range"""
+    """Convert String to IPv4 Address Range. This component uses netaddr module to generate IPv4 addresses"""
 
     def main(self, argv, context):
 

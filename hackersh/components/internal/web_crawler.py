@@ -35,7 +35,7 @@ __version__ = "0.1.0"
 # Implementation
 
 class Web_Crawler(hackersh.components.internal.InternalComponent):
-    "Return a List of hyperlinks in a given Website"
+    "Return a List of hyperlinks in a given Website. This component uses the mechanize module"
 
     def main(self, argv, context):
 

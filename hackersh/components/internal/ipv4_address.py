@@ -33,7 +33,7 @@ __version__ = "0.1.0"
 # Implementation
 
 class IPv4_Address(hackersh.components.RootComponent):
-    """Convert String to IPv4 Address"""
+    """Convert String to IPv4 Address. This component uses the socket module available on the Python Standard Library to validate IPv4 address"""
 
     def main(self, argv, context):
 

@@ -257,7 +257,7 @@ def invert(regex):
 
 class RegexExpand(hackersh.components.RootComponent):
 
-    """Expand a Regular Expression (String) Into All the Possible Matching Strings"""
+    """Expand a Regular Expression (String) Into All the Possible Matching Strings. This component uses the pyparsing module"""
 
     def main(self, argv, context):
 
