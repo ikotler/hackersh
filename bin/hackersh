@@ -551,15 +551,21 @@ def main(argv=sys.argv):
 
         scriptname, scriptextension = os.path.splitext(args.script.name)
 
+        _log.debug('In Script-Mode with %s from Format %s' % (scriptname, scriptextension))
+
         if scriptextension:
 
             parsers = pythonect.internal.parsers.get_parsers(os.path.abspath(os.path.join(os.path.dirname(pythonect.internal.parsers.__file__), '..', 'parsers')))
+
+            _log.debug('Parsers = %s' % parsers)
 
             try:
 
                 parser = parsers[scriptextension[1:]]
 
-                hackersh.eval(content, locals_)
+                _log.debug('Parser = %s' % parser)
+
+                hackersh.eval(parser.parse(content), locals_)
 
                 if content is None:
 
