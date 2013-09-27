@@ -2,7 +2,17 @@
 Hackersh
 ========
 
-`Hackersh <http://www.hackersh.org>`_ ("Hacker Shell") is a shell (command interpreter) written in Python with Pythonect-like syntax, builtin security commands, and out of the box wrappers for various security tools.
+.. image:: https://badge.fury.io/py/Hackersh.png
+    :target: http://badge.fury.io/py/Hackersh
+    :alt: Latest version
+
+.. image:: https://pypip.in/d/Hackersh/badge.png
+    :target: https://crate.io/packages/Hackersh/
+    :alt: Number of PyPI downloads
+
+Homepage: `http://www.hackersh.org/ <http://www.hackersh.org/>`_
+
+`Hackersh <http://www.hackersh.org>`_ ("Hacker Shell") is a free and open source command-line shell and scripting language designed especially for security testing. Written in Python and uses Pythonect as its scripting engine, hackersh helps IT security professionals simulate real-world attacks and conduct penetration tests.
 
 Hello, world
 ------------
@@ -11,7 +21,10 @@ Here is the canonical "Hello, world" example program in Hackersh::
 
 	"http://localhost" -> url -> nmap -> w3af
 
-Wait, what? This is a a compacted but 100% complete implementation of a black-box web application vulnerability scanner
+Or:
+
+.. image:: http://hackersh.org/helloworld.png
+
 
 Installation
 ------------
@@ -45,6 +58,31 @@ For any of the above methods, if you want to do a system-wide installation, you 
 
 .. _PyPI: http://pypi.python.org/pypi/Hackersh/
 .. _pip: http://www.pip-installer.org/
+
+Examples
+--------
+
+For more examples please take a look at the `examples <https://github.com/ikotler/hackersh/tree/master/examples>`_ directory
+
+Documentation
+-------------
+
+Full documentation is available at http://docs.hackersh.org/.
+
+Please Help Out
+---------------
+
+This project is still under development. Feedback and suggestions are very
+welcome and I encourage you to use the `Issues list
+<http://github.com/ikotler/hackersh/issues>`_ on GitHub to provide that
+feedback.
+
+Contributors are welcome. Please refer to the `development
+<http://docs.hackersh.org/en/latest/development.html>`_ section in the
+documentation for guidelines.
+
+Any questions, tips, or general discussion can be posted to our Google group:
+`http://groups.google.com/group/hackersh-dev <http://groups.google.com/group/hackersh-dev>`_
 
 License
 -------
