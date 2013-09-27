@@ -218,10 +218,14 @@ def eval(source, locals_):
     """Evaluate Hackersh code in the context of locals.
 
     Args:
+<<<<<<< HEAD
         source: A string representing text-based Hackersh code or networkx.DiGraph instance.
 <<<<<<< HEAD
         namespace: A dictionary with components.
 =======
+=======
+        source: A string representing text-based Hackersh code or networkx.DiGraph() instance
+>>>>>>> Document eval() and parse() functions
         locals: A dictionary with components.
 >>>>>>> Document eval() and parse() functions
 
