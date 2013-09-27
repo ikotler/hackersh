@@ -215,7 +215,6 @@ def eval(source, namespace):
 
     Args:
         source: A string representing text-based Hackersh code or networkx.DiGraph instance.
-
         namespace: A dictionary with components.
 
     Returns:
