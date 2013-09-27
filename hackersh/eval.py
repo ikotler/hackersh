@@ -214,7 +214,8 @@ def eval(source, namespace):
     """Evaluate Hackersh code in the context of locals.
 
     Args:
-        source: A string representing text-based Hackersh code or networkx.DiGraph instance()
+        source: A string representing text-based Hackersh code or networkx.DiGraph instance.
+
         namespace: A dictionary with components.
 
     Returns:
