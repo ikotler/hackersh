@@ -210,12 +210,20 @@ def parse(source):
     return pythonect.parse(new_source.strip())
 
 
+<<<<<<< HEAD
 def eval(source, namespace):
+=======
+def eval(source, locals_):
+>>>>>>> Document eval() and parse() functions
     """Evaluate Hackersh code in the context of locals.
 
     Args:
         source: A string representing text-based Hackersh code or networkx.DiGraph instance.
+<<<<<<< HEAD
         namespace: A dictionary with components.
+=======
+        locals: A dictionary with components.
+>>>>>>> Document eval() and parse() functions
 
     Returns:
         The return value is the result of the evaluated code.
