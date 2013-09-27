@@ -156,6 +156,17 @@ def __command_preprocessor(command):
 
 
 def parse(source):
+    """Parse text-mode Hackersh scripting language into a directed graph (i.e. networkx.DiGraph)
+
+    Args:
+        source: A string representing text-based Hackersh code.
+
+    Returns:
+        A directed graph (i.e. networkx.DiGraph) of Hackersh symbols.
+
+    Raises:
+        SyntaxError: An error occurred parsing the code.
+    """
 
     _log.debug('Calling parse WITH %s' % (source))
 
@@ -199,7 +210,19 @@ def parse(source):
     return pythonect.parse(new_source.strip())
 
 
-def eval(source, locals_):
+def eval(source, namespace):
+    """Evaluate Hackersh code in the context of locals.
+
+    Args:
+        source: A string representing text-based Hackersh code or networkx.DiGraph instance()
+        namespace: A dictionary with components.
+
+    Returns:
+        The return value is the result of the evaluated code.
+
+    Raises:
+        SyntaxError: An error occurred parsing the code.
+    """
 
     return_value = None
 
@@ -217,6 +240,6 @@ def eval(source, locals_):
 
             graph = source
 
-        return_value = pythonect.eval(_hackersh_graph_transform(graph, locals_), {'__IN_EVAL__': True}, locals_)
+        return_value = pythonect.eval(_hackersh_graph_transform(graph, namespace), {'__IN_EVAL__': True}, namespace)
 
     return return_value
