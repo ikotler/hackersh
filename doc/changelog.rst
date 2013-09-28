@@ -1,0 +1,4 @@
+Hackersh Changelog
+------------------
+
+.. include:: ../CHANGELOG
