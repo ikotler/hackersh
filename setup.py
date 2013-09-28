@@ -65,7 +65,7 @@ if __name__ == "__main__":
 
         # Python 2.6
 
-        dependencies = dependencies + ['argparse>=1.2.1', 'ordereddict>=1.1']
+        dependencies = dependencies + ['argparse>=1.2.1']
 
     setupconf = dict(
         name='Hackersh',
@@ -74,7 +74,7 @@ if __name__ == "__main__":
         author_email='xorninja@gmail.com',
         url='http://www.hackersh.org/',
         license='GPLv2+',
-        description='Hacker Shell, a shell (command interpreter) written in Python with Pythonect-like syntax, built-in security commands, and out of the box wrappers for various security tools.',
+        description='Hackersh ("Hacker Shell") is a free and open source command-line shell and scripting language designed especially for security testing. Written in Python and uses Pythonect as its scripting engine, hackersh helps IT security professionals simulate real-world attacks and conduct penetration tests.',
 
         long_description=open('README.rst').read(),
 
