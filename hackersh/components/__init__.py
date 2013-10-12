@@ -165,7 +165,9 @@ class Component(object):
 
                     try:
 
-                        return_value.append(context.push(entry_key, entry))
+                        _log.debug('Appending with Copy-on-Write!')
+
+                        return_value.append(context.push(entry_key, entry, True))
 
                         self.logger.debug('Pushed!')
 
@@ -203,7 +205,9 @@ class Component(object):
 
                     try:
 
-                        return_value = context.push(base_keyname, entry_or_entries)
+                        _log.debug('Appending without Copy-on-Write!!!')
+
+                        return_value = context.push(base_keyname, entry_or_entries, False)
 
                     # i.e "127.0.0.1" | ipv4_address | nmap | print_all => AttributeError: 'list' object has no attribute 'push'
 
@@ -483,11 +487,17 @@ class Context(object):
 
         return copy.deepcopy(self)
 
-    def push(self, key, value):
+    def push(self, key, value, copy_on_write=True):
 
-        # Copy-on-Write
+        if copy_on_write:
 
-        new_ctx = self._copy()
+            # Copy-on-Write
+
+            new_ctx = self._copy()
+
+        else:
+
+            new_ctx = self
 
         # Started from ENVP (i.e. IPV4_ADDRESS="127.0.0.1" | ./bin/hackersh -c "_ | nmap") ?
 
@@ -497,7 +507,9 @@ class Context(object):
 
             new_ctx._graph.add_node('envp', value)
 
-        new_ctx._graph = new_ctx._graph.copy()
+        if copy_on_write:
+
+            new_ctx._graph = new_ctx._graph.copy()
 
         new_ctx._graph.add_node(new_ctx._graph.graph['prefix'] + key, value)
 
